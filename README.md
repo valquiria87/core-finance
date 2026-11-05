@@ -231,9 +231,12 @@ Endpoint `/insights` (backend) retorna:
 ```mermaid
 flowchart LR
   U[Usuario] --> C[Chat Web]
-  C --> M[MCP Client]
-  M --> P[Pluggy MCP HTTP]
-  M --> A[Plaid MCP STDIO]
+  C --> S[/api/sandbox]
+  C --> R[/api/core]
+  S --> M[lib/mock-data.ts]
+  R --> E[lib/core-engine.ts]
+  C -. pesquisa .-> P[Pluggy MCP HTTP (docs)]
+  C -. experimentacao externa .-> A[Plaid Sandbox (dados)]
   C --> B[Backend Webhook/Insights]
   B --> W[Webhook Events]
   B --> I[Insights]
@@ -241,7 +244,7 @@ flowchart LR
 
 ## 12. Decisoes tecnicas (ADRs curtos)
 
-- ADR-01: Etapa 1 com chaves no cliente para prototipar rapido; Etapa 2 move segredos para backend.
+- ADR-01: Etapa 1 usa dados ficticios locais e regras locais, sem chaves no frontend; Etapa 2 move integracao real com APIs externas e segredos para backend.
 - ADR-02: Pluggy como fonte de documentacao (sem dados reais); Plaid como sandbox de dados.
 - ADR-03: Valor positivo = saida (Plaid); cartao rotulado como divida.
 - ADR-04: Backend em Node/Express com zod, logs estruturados e retries.
