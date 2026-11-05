@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "tx-001",
+    "date": "2026-10-02",
+    "description": "Uber",
+    "merchant": "Uber",
+    "account": "Conta Corrente",
+    "amount": 705.77,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-002",
+    "date": "2026-11-09",
+    "description": "Aluguel",
+    "merchant": "Aluguel",
+    "account": "Conta Corrente",
+    "amount": 644.48,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-003",
+    "date": "2026-09-28",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Conta Corrente",
+    "amount": 33.16,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-004",
+    "date": "2026-11-23",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Cartao Credito",
+    "amount": 192.9,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-005",
+    "date": "2026-09-01",
+    "description": "Academia Fit",
+    "merchant": "Academia Fit",
+    "account": "Conta Corrente",
+    "amount": 561.86,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-006",
+    "date": "2026-09-28",
+    "description": "Adobe",
+    "merchant": "Adobe",
+    "account": "Cartao Credito",
+    "amount": 267.59,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-007",
+    "date": "2026-10-16",
+    "description": "Uber",
+    "merchant": "Uber",
+    "account": "Cartao Credito",
+    "amount": 364.03,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-008",
+    "date": "2026-11-08",
+    "description": "Cinema",
+    "merchant": "Cinema",
+    "account": "Conta Corrente",
+    "amount": 694.6,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-009",
+    "date": "2026-11-20",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Cartao Credito",
+    "amount": 526.68,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-010",
+    "date": "2026-09-30",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Cartao Credito",
+    "amount": 48.3,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-011",
+    "date": "2026-10-19",
+    "description": "99",
+    "merchant": "99",
+    "account": "Cartao Credito",
+    "amount": 823.83,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-012",
+    "date": "2026-10-16",
+    "description": "Reembolso",
+    "merchant": "Reembolso",
+    "account": "Conta Corrente",
+    "amount": -734.35,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-013",
+    "date": "2026-09-22",
+    "description": "Cinema",
+    "merchant": "Cinema",
+    "account": "Conta Corrente",
+    "amount": 580.63,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-014",
+    "date": "2026-11-21",
+    "description": "Conta de Agua",
+    "merchant": "Conta de Agua",
+    "account": "Conta Corrente",
+    "amount": 363.59,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-015",
+    "date": "2026-09-05",
+    "description": "Amazon",
+    "merchant": "Amazon",
+    "account": "Cartao Credito",
+    "amount": 221.45,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-016",
+    "date": "2026-11-12",
+    "description": "Adobe",
+    "merchant": "Adobe",
+    "account": "Cartao Credito",
+    "amount": 67.55,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-017",
+    "date": "2026-11-22",
+    "description": "Academia Fit",
+    "merchant": "Academia Fit",
+    "account": "Cartao Credito",
+    "amount": 378.87,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-018",
+    "date": "2026-11-11",
+    "description": "Conta de Luz",
+    "merchant": "Conta de Luz",
+    "account": "Cartao Credito",
+    "amount": 136.95,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-019",
+    "date": "2026-09-29",
+    "description": "iCloud",
+    "merchant": "iCloud",
+    "account": "Conta Corrente",
+    "amount": 382.43,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-020",
+    "date": "2026-09-15",
+    "description": "Salario",
+    "merchant": "Salario",
+    "account": "Conta Corrente",
+    "amount": -3047.55,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-021",
+    "date": "2026-10-20",
+    "description": "Conta de Agua",
+    "merchant": "Conta de Agua",
+    "account": "Cartao Credito",
+    "amount": 568.61,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-022",
+    "date": "2026-11-10",
+    "description": "Dividendos",
+    "merchant": "Dividendos",
+    "account": "Conta Corrente",
+    "amount": -1080.52,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-023",
+    "date": "2026-11-22",
+    "description": "Estacionamento",
+    "merchant": "Estacionamento",
+    "account": "Cartao Credito",
+    "amount": 714.58,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-024",
+    "date": "2026-10-29",
+    "description": "Posto Shell",
+    "merchant": "Posto Shell",
+    "account": "Conta Corrente",
+    "amount": 415.85,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-025",
+    "date": "2026-11-04",
+    "description": "Parque",
+    "merchant": "Parque",
+    "account": "Conta Corrente",
+    "amount": 725.05,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-026",
+    "date": "2026-09-20",
+    "description": "Parque",
+    "merchant": "Parque",
+    "account": "Cartao Credito",
+    "amount": 580.48,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-027",
+    "date": "2026-11-07",
+    "description": "Internet",
+    "merchant": "Internet",
+    "account": "Conta Corrente",
+    "amount": 906.06,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-028",
+    "date": "2026-10-17",
+    "description": "Shopee",
+    "merchant": "Shopee",
+    "account": "Cartao Credito",
+    "amount": 23.41,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-029",
+    "date": "2026-11-12",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Conta Corrente",
+    "amount": 232.62,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-030",
+    "date": "2026-11-08",
+    "description": "Metro SP",
+    "merchant": "Metro SP",
+    "account": "Conta Corrente",
+    "amount": 776.14,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-031",
+    "date": "2026-09-22",
+    "description": "Conta de Agua",
+    "merchant": "Conta de Agua",
+    "account": "Cartao Credito",
+    "amount": 899.77,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-032",
+    "date": "2026-11-28",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Conta Corrente",
+    "amount": 882.82,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-033",
+    "date": "2026-11-23",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Cartao Credito",
+    "amount": 945.42,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-034",
+    "date": "2026-10-02",
+    "description": "Dividendos",
+    "merchant": "Dividendos",
+    "account": "Conta Corrente",
+    "amount": -1860.8,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-035",
+    "date": "2026-11-10",
+    "description": "Posto Shell",
+    "merchant": "Posto Shell",
+    "account": "Conta Corrente",
+    "amount": 24.88,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-036",
+    "date": "2026-11-20",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Conta Corrente",
+    "amount": 72.09,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-037",
+    "date": "2026-10-13",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Conta Corrente",
+    "amount": 860.62,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-038",
+    "date": "2026-09-28",
+    "description": "Clinica Vida",
+    "merchant": "Clinica Vida",
+    "account": "Conta Corrente",
+    "amount": 637.18,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-039",
+    "date": "2026-10-23",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Conta Corrente",
+    "amount": -3160.02,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-040",
+    "date": "2026-10-16",
+    "description": "Uber",
+    "merchant": "Uber",
+    "account": "Cartao Credito",
+    "amount": 627.74,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-041",
+    "date": "2026-09-07",
+    "description": "Microsoft 365",
+    "merchant": "Microsoft 365",
+    "account": "Conta Corrente",
+    "amount": 821.33,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-042",
+    "date": "2026-09-14",
+    "description": "iFood",
+    "merchant": "iFood",
+    "account": "Conta Corrente",
+    "amount": 693.16,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-043",
+    "date": "2026-09-18",
+    "description": "Drogaria SP",
+    "merchant": "Drogaria SP",
+    "account": "Cartao Credito",
+    "amount": 511.79,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-044",
+    "date": "2026-09-10",
+    "description": "Conta de Luz",
+    "merchant": "Conta de Luz",
+    "account": "Cartao Credito",
+    "amount": 442.18,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-045",
+    "date": "2026-11-09",
+    "description": "Uber",
+    "merchant": "Uber",
+    "account": "Conta Corrente",
+    "amount": 621.28,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-046",
+    "date": "2026-11-02",
+    "description": "99",
+    "merchant": "99",
+    "account": "Cartao Credito",
+    "amount": 162.16,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-047",
+    "date": "2026-09-22",
+    "description": "Academia Fit",
+    "merchant": "Academia Fit",
+    "account": "Cartao Credito",
+    "amount": 857.81,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-048",
+    "date": "2026-10-29",
+    "description": "iFood",
+    "merchant": "iFood",
+    "account": "Cartao Credito",
+    "amount": 255.62,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-049",
+    "date": "2026-11-02",
+    "description": "iCloud",
+    "merchant": "iCloud",
+    "account": "Conta Corrente",
+    "amount": 630.47,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-050",
+    "date": "2026-09-08",
+    "description": "Clinica Vida",
+    "merchant": "Clinica Vida",
+    "account": "Conta Corrente",
+    "amount": 210.73,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-051",
+    "date": "2026-11-01",
+    "description": "Amazon",
+    "merchant": "Amazon",
+    "account": "Conta Corrente",
+    "amount": 52.38,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-052",
+    "date": "2026-09-24",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Conta Corrente",
+    "amount": 80.71,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-053",
+    "date": "2026-11-12",
+    "description": "99",
+    "merchant": "99",
+    "account": "Conta Corrente",
+    "amount": 386.57,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-054",
+    "date": "2026-11-24",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Cartao Credito",
+    "amount": 82.47,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-055",
+    "date": "2026-10-11",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Conta Corrente",
+    "amount": 637.89,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-056",
+    "date": "2026-11-22",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Cartao Credito",
+    "amount": 128.68,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-057",
+    "date": "2026-09-10",
+    "description": "Reembolso",
+    "merchant": "Reembolso",
+    "account": "Conta Corrente",
+    "amount": -3723.17,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-058",
+    "date": "2026-09-13",
+    "description": "Dividendos",
+    "merchant": "Dividendos",
+    "account": "Conta Corrente",
+    "amount": -3993.97,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-059",
+    "date": "2026-10-15",
+    "description": "Plano Saude",
+    "merchant": "Plano Saude",
+    "account": "Conta Corrente",
+    "amount": 255.61,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-060",
+    "date": "2026-10-27",
+    "description": "Clinica Vida",
+    "merchant": "Clinica Vida",
+    "account": "Cartao Credito",
+    "amount": 274.31,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-061",
+    "date": "2026-11-24",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Conta Corrente",
+    "amount": 287.91,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-062",
+    "date": "2026-09-14",
+    "description": "Conta de Luz",
+    "merchant": "Conta de Luz",
+    "account": "Conta Corrente",
+    "amount": 114.08,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-063",
+    "date": "2026-10-14",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Conta Corrente",
+    "amount": 576.56,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-064",
+    "date": "2026-09-07",
+    "description": "Parque",
+    "merchant": "Parque",
+    "account": "Conta Corrente",
+    "amount": 466.66,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-065",
+    "date": "2026-10-13",
+    "description": "Adobe",
+    "merchant": "Adobe",
+    "account": "Conta Corrente",
+    "amount": 46.66,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-066",
+    "date": "2026-11-10",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Cartao Credito",
+    "amount": 705.46,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-067",
+    "date": "2026-11-28",
+    "description": "Supermercado X",
+    "merchant": "Supermercado X",
+    "account": "Conta Corrente",
+    "amount": 76.11,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-068",
+    "date": "2026-09-19",
+    "description": "Padaria Pao Bom",
+    "merchant": "Padaria Pao Bom",
+    "account": "Cartao Credito",
+    "amount": 555.47,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-069",
+    "date": "2026-09-06",
+    "description": "Aluguel",
+    "merchant": "Aluguel",
+    "account": "Cartao Credito",
+    "amount": 296.3,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-070",
+    "date": "2026-10-16",
+    "description": "Drogaria SP",
+    "merchant": "Drogaria SP",
+    "account": "Cartao Credito",
+    "amount": 635.25,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-071",
+    "date": "2026-09-23",
+    "description": "Condominio",
+    "merchant": "Condominio",
+    "account": "Cartao Credito",
+    "amount": 822.05,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-072",
+    "date": "2026-10-13",
+    "description": "Restaurante Z",
+    "merchant": "Restaurante Z",
+    "account": "Cartao Credito",
+    "amount": 701.05,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-073",
+    "date": "2026-11-29",
+    "description": "Clinica Vida",
+    "merchant": "Clinica Vida",
+    "account": "Conta Corrente",
+    "amount": 155.44,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-074",
+    "date": "2026-09-29",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Conta Corrente",
+    "amount": 816.37,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-075",
+    "date": "2026-09-30",
+    "description": "Reembolso",
+    "merchant": "Reembolso",
+    "account": "Conta Corrente",
+    "amount": -1290.24,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-076",
+    "date": "2026-10-06",
+    "description": "Restaurante Z",
+    "merchant": "Restaurante Z",
+    "account": "Conta Corrente",
+    "amount": 381.55,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-077",
+    "date": "2026-10-22",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Cartao Credito",
+    "amount": 611.2,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-078",
+    "date": "2026-10-04",
+    "description": "Supermercado X",
+    "merchant": "Supermercado X",
+    "account": "Conta Corrente",
+    "amount": 833.8,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-079",
+    "date": "2026-10-26",
+    "description": "Cinema",
+    "merchant": "Cinema",
+    "account": "Cartao Credito",
+    "amount": 107.44,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-080",
+    "date": "2026-11-05",
+    "description": "Shopee",
+    "merchant": "Shopee",
+    "account": "Conta Corrente",
+    "amount": 577.87,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-081",
+    "date": "2026-09-06",
+    "description": "iCloud",
+    "merchant": "iCloud",
+    "account": "Cartao Credito",
+    "amount": 184.62,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-082",
+    "date": "2026-11-08",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Conta Corrente",
+    "amount": 879.67,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-083",
+    "date": "2026-11-25",
+    "description": "Shopee",
+    "merchant": "Shopee",
+    "account": "Cartao Credito",
+    "amount": 71.13,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-084",
+    "date": "2026-10-09",
+    "description": "Amazon",
+    "merchant": "Amazon",
+    "account": "Cartao Credito",
+    "amount": 685.17,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-085",
+    "date": "2026-10-08",
+    "description": "Adobe",
+    "merchant": "Adobe",
+    "account": "Conta Corrente",
+    "amount": 385.27,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-086",
+    "date": "2026-10-19",
+    "description": "Academia Fit",
+    "merchant": "Academia Fit",
+    "account": "Conta Corrente",
+    "amount": 633.36,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-087",
+    "date": "2026-09-01",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Cartao Credito",
+    "amount": 522.8,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-088",
+    "date": "2026-11-14",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Cartao Credito",
+    "amount": 411.24,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-089",
+    "date": "2026-09-28",
+    "description": "Bonus",
+    "merchant": "Bonus",
+    "account": "Cartao Credito",
+    "amount": -1824.42,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-090",
+    "date": "2026-11-24",
+    "description": "Aluguel",
+    "merchant": "Aluguel",
+    "account": "Cartao Credito",
+    "amount": 273.18,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-091",
+    "date": "2026-09-29",
+    "description": "99",
+    "merchant": "99",
+    "account": "Conta Corrente",
+    "amount": 640.79,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-092",
+    "date": "2026-10-31",
+    "description": "Aluguel",
+    "merchant": "Aluguel",
+    "account": "Conta Corrente",
+    "amount": 48.67,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-093",
+    "date": "2026-11-13",
+    "description": "Bonus",
+    "merchant": "Bonus",
+    "account": "Conta Corrente",
+    "amount": -3555.93,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-094",
+    "date": "2026-09-19",
+    "description": "Microsoft 365",
+    "merchant": "Microsoft 365",
+    "account": "Conta Corrente",
+    "amount": 382.67,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-095",
+    "date": "2026-11-29",
+    "description": "Metro SP",
+    "merchant": "Metro SP",
+    "account": "Cartao Credito",
+    "amount": 211.8,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-096",
+    "date": "2026-09-16",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Cartao Credito",
+    "amount": 240.49,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-097",
+    "date": "2026-11-11",
+    "description": "Conta de Agua",
+    "merchant": "Conta de Agua",
+    "account": "Cartao Credito",
+    "amount": 635.86,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-098",
+    "date": "2026-11-04",
+    "description": "Dividendos",
+    "merchant": "Dividendos",
+    "account": "Cartao Credito",
+    "amount": -3278.53,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-099",
+    "date": "2026-10-31",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Cartao Credito",
+    "amount": -3000.26,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-100",
+    "date": "2026-10-06",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Cartao Credito",
+    "amount": 798.67,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-101",
+    "date": "2026-10-07",
+    "description": "Clinica Vida",
+    "merchant": "Clinica Vida",
+    "account": "Conta Corrente",
+    "amount": 420.68,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-102",
+    "date": "2026-11-09",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Conta Corrente",
+    "amount": 307.13,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-103",
+    "date": "2026-11-28",
+    "description": "Condominio",
+    "merchant": "Condominio",
+    "account": "Conta Corrente",
+    "amount": 223.54,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-104",
+    "date": "2026-10-13",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Cartao Credito",
+    "amount": 397.05,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-105",
+    "date": "2026-10-24",
+    "description": "Netflix",
+    "merchant": "Netflix",
+    "account": "Cartao Credito",
+    "amount": 200.46,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-106",
+    "date": "2026-09-01",
+    "description": "Cafe Central",
+    "merchant": "Cafe Central",
+    "account": "Cartao Credito",
+    "amount": 364.46,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-107",
+    "date": "2026-10-24",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Conta Corrente",
+    "amount": 811.51,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-108",
+    "date": "2026-11-02",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Conta Corrente",
+    "amount": -1164.45,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-109",
+    "date": "2026-10-22",
+    "description": "Adobe",
+    "merchant": "Adobe",
+    "account": "Conta Corrente",
+    "amount": 637.09,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-110",
+    "date": "2026-11-08",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Conta Corrente",
+    "amount": -3924.82,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-111",
+    "date": "2026-09-04",
+    "description": "iCloud",
+    "merchant": "iCloud",
+    "account": "Conta Corrente",
+    "amount": 538.35,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-112",
+    "date": "2026-09-24",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Conta Corrente",
+    "amount": 824.17,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-113",
+    "date": "2026-10-29",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Cartao Credito",
+    "amount": 314.35,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-114",
+    "date": "2026-10-24",
+    "description": "Shopee",
+    "merchant": "Shopee",
+    "account": "Cartao Credito",
+    "amount": 267.95,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-115",
+    "date": "2026-11-09",
+    "description": "Metro SP",
+    "merchant": "Metro SP",
+    "account": "Conta Corrente",
+    "amount": 23.32,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-116",
+    "date": "2026-11-23",
+    "description": "Mercado Livre",
+    "merchant": "Mercado Livre",
+    "account": "Conta Corrente",
+    "amount": 619.39,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-117",
+    "date": "2026-09-03",
+    "description": "Restaurante Z",
+    "merchant": "Restaurante Z",
+    "account": "Conta Corrente",
+    "amount": 193.4,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-118",
+    "date": "2026-09-15",
+    "description": "Drogaria SP",
+    "merchant": "Drogaria SP",
+    "account": "Conta Corrente",
+    "amount": 452.52,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-119",
+    "date": "2026-09-22",
+    "description": "Reembolso",
+    "merchant": "Reembolso",
+    "account": "Conta Corrente",
+    "amount": -3090.9,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-120",
+    "date": "2026-09-04",
+    "description": "Conta de Luz",
+    "merchant": "Conta de Luz",
+    "account": "Cartao Credito",
+    "amount": 107.15,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-121",
+    "date": "2026-09-26",
+    "description": "Microsoft 365",
+    "merchant": "Microsoft 365",
+    "account": "Conta Corrente",
+    "amount": 894.69,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-122",
+    "date": "2026-10-09",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Conta Corrente",
+    "amount": 663.85,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-123",
+    "date": "2026-11-24",
+    "description": "Padaria Pao Bom",
+    "merchant": "Padaria Pao Bom",
+    "account": "Cartao Credito",
+    "amount": 508.44,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-124",
+    "date": "2026-09-02",
+    "description": "Estacionamento",
+    "merchant": "Estacionamento",
+    "account": "Cartao Credito",
+    "amount": 616.93,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-125",
+    "date": "2026-10-17",
+    "description": "Salario",
+    "merchant": "Salario",
+    "account": "Cartao Credito",
+    "amount": -1790.74,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-126",
+    "date": "2026-11-06",
+    "description": "Conta de Agua",
+    "merchant": "Conta de Agua",
+    "account": "Cartao Credito",
+    "amount": 171.45,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-127",
+    "date": "2026-11-15",
+    "description": "Bonus",
+    "merchant": "Bonus",
+    "account": "Cartao Credito",
+    "amount": -1798.74,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-128",
+    "date": "2026-09-12",
+    "description": "Mercado Livre",
+    "merchant": "Mercado Livre",
+    "account": "Cartao Credito",
+    "amount": 790.04,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-129",
+    "date": "2026-11-12",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Cartao Credito",
+    "amount": -3026.86,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-130",
+    "date": "2026-10-12",
+    "description": "Amazon",
+    "merchant": "Amazon",
+    "account": "Conta Corrente",
+    "amount": 472.12,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-131",
+    "date": "2026-10-04",
+    "description": "Freelance",
+    "merchant": "Freelance",
+    "account": "Cartao Credito",
+    "amount": -1483.82,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-132",
+    "date": "2026-10-06",
+    "description": "Parque",
+    "merchant": "Parque",
+    "account": "Conta Corrente",
+    "amount": 667.62,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-133",
+    "date": "2026-10-23",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Cartao Credito",
+    "amount": 233.08,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-134",
+    "date": "2026-11-02",
+    "description": "Academia Fit",
+    "merchant": "Academia Fit",
+    "account": "Cartao Credito",
+    "amount": 615.38,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-135",
+    "date": "2026-10-22",
+    "description": "Supermercado X",
+    "merchant": "Supermercado X",
+    "account": "Conta Corrente",
+    "amount": 283.05,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-136",
+    "date": "2026-11-10",
+    "description": "Parque",
+    "merchant": "Parque",
+    "account": "Cartao Credito",
+    "amount": 353.72,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-137",
+    "date": "2026-11-29",
+    "description": "iCloud",
+    "merchant": "iCloud",
+    "account": "Cartao Credito",
+    "amount": 317.6,
+    "true_category": "assinaturas"
+  },
+  {
+    "id": "tx-138",
+    "date": "2026-09-16",
+    "description": "Spotify",
+    "merchant": "Spotify",
+    "account": "Conta Corrente",
+    "amount": 242.58,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-139",
+    "date": "2026-11-28",
+    "description": "Amazon",
+    "merchant": "Amazon",
+    "account": "Conta Corrente",
+    "amount": 707.02,
+    "true_category": "compras"
+  },
+  {
+    "id": "tx-140",
+    "date": "2026-10-06",
+    "description": "Drogaria SP",
+    "merchant": "Drogaria SP",
+    "account": "Cartao Credito",
+    "amount": 702.98,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-141",
+    "date": "2026-10-17",
+    "description": "99",
+    "merchant": "99",
+    "account": "Conta Corrente",
+    "amount": 284.95,
+    "true_category": "transporte"
+  },
+  {
+    "id": "tx-142",
+    "date": "2026-09-17",
+    "description": "Cinema",
+    "merchant": "Cinema",
+    "account": "Cartao Credito",
+    "amount": 674.08,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-143",
+    "date": "2026-11-29",
+    "description": "Supermercado X",
+    "merchant": "Supermercado X",
+    "account": "Conta Corrente",
+    "amount": 527.92,
+    "true_category": "alimentacao"
+  },
+  {
+    "id": "tx-144",
+    "date": "2026-11-13",
+    "description": "Salario",
+    "merchant": "Salario",
+    "account": "Cartao Credito",
+    "amount": -3503.61,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-145",
+    "date": "2026-09-24",
+    "description": "Bonus",
+    "merchant": "Bonus",
+    "account": "Conta Corrente",
+    "amount": -1817.83,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-146",
+    "date": "2026-09-09",
+    "description": "Teatro",
+    "merchant": "Teatro",
+    "account": "Cartao Credito",
+    "amount": 112.81,
+    "true_category": "lazer"
+  },
+  {
+    "id": "tx-147",
+    "date": "2026-11-27",
+    "description": "Salario",
+    "merchant": "Salario",
+    "account": "Conta Corrente",
+    "amount": -2350.38,
+    "true_category": "renda"
+  },
+  {
+    "id": "tx-148",
+    "date": "2026-10-09",
+    "description": "Condominio",
+    "merchant": "Condominio",
+    "account": "Conta Corrente",
+    "amount": 771.53,
+    "true_category": "moradia"
+  },
+  {
+    "id": "tx-149",
+    "date": "2026-10-24",
+    "description": "Farmacia Y",
+    "merchant": "Farmacia Y",
+    "account": "Conta Corrente",
+    "amount": 532.38,
+    "true_category": "saude"
+  },
+  {
+    "id": "tx-150",
+    "date": "2026-10-09",
+    "description": "Microsoft 365",
+    "merchant": "Microsoft 365",
+    "account": "Cartao Credito",
+    "amount": 863.54,
+    "true_category": "assinaturas"
+  }
+]
