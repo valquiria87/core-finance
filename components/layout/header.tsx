@@ -7,20 +7,12 @@ import { Badge } from '@/components/finance/badge'
 import { useSandbox } from '@/hooks/use-sandbox'
 import { Monogram } from './monogram'
 
-function greeting(hour: number) {
-  if (hour < 12) return 'Bom dia'
-  if (hour < 18) return 'Boa tarde'
-  return 'Boa noite'
-}
-
 export function Header() {
   const { resolvedTheme, setTheme } = useTheme()
   const { data } = useSandbox()
-  const [hello, setHello] = useState('Olá')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setHello(greeting(new Date().getHours()))
     setMounted(true)
   }, [])
 
@@ -29,12 +21,12 @@ export function Header() {
 
   return (
     <header className="flex items-center gap-3 py-4 md:py-6">
-      <span className="md:hidden">
-        <Monogram />
-      </span>
+      <Monogram />
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-text-muted">Core Finance</p>
-        <h1 className="truncate text-xl font-bold tracking-tight md:text-2xl">{hello}, Valquíria</h1>
+        <h1 className="truncate text-xl font-bold tracking-tight md:text-2xl">Core Finance</h1>
+        <p className="truncate text-xs text-text-muted md:text-sm">
+          O núcleo inteligente para suas conexões de Open Finance
+        </p>
       </div>
       <Badge tone={live ? 'inflow' : 'coral'} className="hidden sm:inline-flex">
         <span aria-hidden="true" className={live ? 'size-1.5 rounded-full bg-inflow' : 'size-1.5 animate-pulse rounded-full bg-coral'} />

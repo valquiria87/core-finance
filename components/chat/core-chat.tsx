@@ -23,7 +23,7 @@ const WELCOME: ChatMessage = {
   blocks: [
     {
       type: 'text',
-      text: 'Oi, Valquíria! Sou o Core. Pergunte sobre seus saldos, transações ou padrões de gasto — tudo com dados de teste.',
+      text: 'Olá! Sou o Core. Pergunte sobre seus saldos, transações ou padrões de gasto — tudo com dados de teste.',
     },
   ],
 }
