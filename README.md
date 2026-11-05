@@ -11,17 +11,22 @@ Responde em portugues sobre contas, saldos e transacoes, com dados chegando por 
 - Nome do projeto/assistente: Core Finance (tom empatico).
 - Slogan: O núcleo inteligente para suas conexões de Open Finance.
 - Autora: Valquiria Coelho.
-- Cenario: aplicacao conectada por MCP de Open Finance, usando a Pluggy
-  como gerador de conexao e interface de front-end.
+- Cenario: aplicacao web (Next.js) com chat e dashboard, conectada por MCP de Open Finance.
+  A Pluggy e usada como fonte de documentacao (conceitos de Open Finance BR); os dados
+  financeiros exibidos sao ficticios (mock local no formato da sandbox Plaid — Etapa 1).
 - O assistente responde em portugues sobre contas, saldos e transacoes.
 
 ## 2. De onde vem cada dado
 
-| Dado | Fonte | Tipo de MCP | Observacao |
+| Dado | Fonte | Tipo | Observacao |
 |---|---|---|---|
-| Conceitos de Open Finance BR (Item, connector, consentimento) | Pluggy (docs) | Streamable HTTP (`https://mcp.pluggy.ai/mcp`) | Sem chave; apenas documentacao |
-| Contas, saldos e transacoes ficticias | Plaid (sandbox) | STDIO (`uvx mcp-server-plaid`) | Requer `PLAID_CLIENT_ID` e `PLAID_SECRET` |
-| Organizacao da resposta em linguagem simples | Modelo de linguagem do chat | - | Nao "sabe" o saldo; organiza o que a tool devolve |
+| Conceitos de Open Finance BR (Item, connector, consentimento) | Pluggy (documentacao) | MCP Streamable HTTP (`https://mcp.pluggy.ai/mcp`) | Sem chave; apenas documentacao |
+| Contas, saldos e transacoes ficticias (Etapa 1) | Mock local espelhando o formato da sandbox Plaid | Dados estaticos em `lib/mock-data.ts` (rota `/api/sandbox`) | Sem credenciais; `PLAID_CLIENT_ID`/`PLAID_SECRET` so serao usados na Etapa 2 (backend) |
+| Organizacao da resposta em linguagem simples | Modelo de linguagem do chat | - | Nao "sabe" o saldo; organiza o que a fonte devolve |
+
+> Nota: a aplicacao atual (Etapa 1) NAO chama a API da Plaid nem a da Pluggy em runtime.
+> Os dados sao ficticios e locais. A Etapa 2 (backend com chaves no servidor) esta planejada,
+> nao implementada em producao.
 
 ## 3. Como configurar os servidores MCP
 
@@ -36,11 +41,9 @@ https://mcp.pluggy.ai/mcp
 Sem chave. Confira com `/mcp` e peca a IA para explicar o que e um Item,
 citando as fontes retornadas.
 
-**Print esperado (adicione em `evidencias/`):**
+Print da configuracao:
 
-```
 ![Print: Configuracao MCP Pluggy](evidencias/Print%2001.png)
-```
 
 > O print deve mostrar: a tela de configuracao de servidor MCP com a URL
 > `https://mcp.pluggy.ai/mcp` preenchida e, opcionalmente, a resposta da IA ao
@@ -77,11 +80,9 @@ Exemplo de configuracao (ajuste o caminho do `uvx` para o seu computador):
 > **Atenção:** substitua `CAMINHO_ABSOLUTO_PARA_UVX` pelo caminho real do `uvx.exe`
 > no seu computador. Nunca commite este arquivo com credenciais reais.
 
-**Print esperado (adicione em `evidencias/`):**
+Print da configuracao:
 
-```
 ![Print: Configuracao MCP Plaid](evidencias/Print%2002.png)
-```
 
 > O print deve mostrar: o bloco JSON da configuracao MCP (com credenciais
 > **borradas ou substituídas por `<oculto>`**) e a resposta da IA listando
@@ -105,11 +106,14 @@ Ajustes feitos depois:
 - Nome alterado para Core Finance com tagline: "O núcleo inteligente para suas conexões de Open Finance".
 - Tom empatico e cenario Open Finance via Pluggy.
 
-## 5. Melhoria escolhida
+## 5. Melhoria escolhida (planejada, nao implementada em producao)
 
 Etapa 2: backend proprio com as chaves apenas no servidor (em vez de chaves no cliente).
 Inclui recebimento de webhooks (ver `docs/webhooks.md`) e entrega ao cliente
 por push, SMS ou WhatsApp.
+
+O backend em `backend/` ja existe como prototipo (servidor Express com `/insights` e webhook), mas a integracao
+com a API da Plaid em producao ainda nao esta ativa (Etapa 2).
 
 ## 6. Endereco do app publicado
 
@@ -118,38 +122,94 @@ por push, SMS ou WhatsApp.
 ## 7. Estrutura do repositorio
 
 ```
-chat-financeiro-mcp/
+core-finance/
   README.md
   SECURITY.md
-  frontend/
-    (Next.js gerado pelo v0 e exportado para GitHub)
+  components.json
+  next.config.mjs
+  package.json
+  pnpm-lock.yaml
+  pnpm-workspace.yaml
+  postcss.config.mjs
+  tsconfig.json
+  .gitignore
+  app/
+    globals.css
+    layout.tsx
+    page.tsx
+    api/
+      core/
+        route.ts
+      sandbox/
+        route.ts
   backend/
-    server.js
+    .env.example
     insights.js
     package.json
-    .env.example
+    package-lock.json
+    server.js
     public/
       index.html
+  components/
+    chat/
+    dashboard/
+    finance/
+    layout/
+    ui/
+  hooks/
+    use-sandbox.ts
+  lib/
+    categories.ts
+    core-engine.ts
+    finance.ts
+    format.ts
+    mock-data.ts
+    types.ts
+    utils.ts
+  public/
+    (icones e placeholders)
   data/
     transactions_labeled.json
   docs/
+    design-system.md
+    oauth-mcp.md
     prompt-lovable.md
     prompt-v0.md
-    design-system.md
     tabela-padroes-gasto.md
     webhooks.md
-    oauth-mcp.md
   scripts/
-    generate_dataset.py
     evaluate_categorization.js
+    generate_dataset.py
   tests/
     insights.test.js
-  .github/
-    workflows/
-      ci.yml
   evidencias/
     Print 01.png
     Print 01.1.png
+## 8. Funcionalidades implementadas vs. documentadas vs. planejadas
+
+### Implementadas (no codigo)
+- Chat web + dashboard (contas, saldos, fluxo, gastos por categoria, lista de transacoes).
+- Dados ficticios locais no formato Plaid sandbox (`lib/mock-data.ts`, rota `/api/sandbox`).
+- Categorizacao por regras de palavras-chave (`lib/categories.ts`).
+- Insights: assinaturas recorrentes, outliers por categoria, previsao de fechamento.
+- Backend Express prototipo com `/insights` e webhook (`backend/server.js`, `backend/insights.js`).
+- Validacao de entrada com zod no webhook.
+
+### Documentadas (docs/)
+- Especificacao OpenSpec para v0/Lovable (`docs/prompt-v0.md`, `docs/prompt-lovable.md`).
+- Design system (`docs/design-system.md`).
+- Tabela de padroes de gasto (`docs/tabela-padroes-gasto.md`).
+- Webhooks (`docs/webhooks.md`).
+- OAuth MCP (`docs/oauth-mcp.md`).
+
+### Planejadas (nao implementadas)
+- Integracao real com a API da Plaid em producao (Etapa 2).
+- Validacao de assinatura de webhook em producao.
+- Persistencia em banco + fila (hoje em memoria).
+- Testes de contrato para tools MCP com mocks.
+- Classificador supervisionado por categoria.
+
+
     Print 02.png
     Print 02.1.png
     Print 02.2.png
@@ -214,4 +274,29 @@ flowchart LR
 - Nenhuma chave aparece em print.
 - Dados ficticios (sandbox) claramente sinalizados no app.
 - Detalhes em `SECURITY.md`.
+
+## 15. Evidencias visuais
+
+### Aplicativo publicado
+- `evidencias/app-core-finance-conversa-gastos-categoria.png` — Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".
+
+### Conceitos e endpoints da Pluggy (consulta via MCP Docs)
+> A Pluggy foi consultada via MCP Docs. Isso nao comprova integracao bancaria funcional: a aplicacao atual (Etapa 1) nao chama a API da Pluggy em runtime.
+- `evidencias/pluggy-docs-mcp-conceito-pluggy-item.png` — O que e a Pluggy e o conceito de Item.
+- `evidencias/pluggy-docs-mcp-conceitos-connector-item-product.png` — Conceitos Connector, Item e Product.
+- `evidencias/pluggy-docs-mcp-endpoints-transactions.png` — Endpoints relacionados a Transactions.
+- `evidencias/pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png` — Endpoints legado, retrieve e atualizacao de categoria.
+- `evidencias/pluggy-docs-mcp-endpoints-investments-recurring-payments.png` — Endpoints de investimentos e recurring-payments.
+- `evidencias/pluggy-docs-mcp-referencia-transaction-autenticacao.png` — Referencia Transaction e autenticacao com token proprio.
+- `evidencias/pluggy-endpoint-transactions-v2-get.png` — Endpoint recomendado GET /v2/transactions.
+- `evidencias/pluggy-endpoint-transactions-v2-parametros.png` — Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).
+- `evidencias/pluggy-endpoint-transactions-v2-resposta-200-legado.png` — Estrutura da resposta 200 (results, next) e inicio do endpoint legado.
+- `evidencias/pluggy-endpoint-transactions-legado-parametros.png` — Parametros do endpoint legado.
+- `evidencias/pluggy-endpoint-transactions-legado-migracao-v2.png` — Final dos parametros legados e recomendacao de migracao para v2.
+
+### Consultas do Plaid Sandbox
+> Os dados exibidos no aplicativo e os dados retornados pelo Plaid Sandbox sao demonstracoes distintas; nao sao o mesmo conjunto de dados.
+- `evidencias/plaid-sandbox-contas-saldos.png` — Tabela de contas e saldos (parte das 14 contas).
+- `evidencias/plaid-sandbox-contas-transacoes-categorias.png` — Contas restantes e resumo de 48 transacoes por categoria.
+- `evidencias/plaid-sandbox-transacoes-convencao-sinais.png` — Continuacao do resumo de transacoes e convencao de sinais.
 
