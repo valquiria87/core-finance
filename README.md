@@ -41,13 +41,7 @@ https://mcp.pluggy.ai/mcp
 Sem chave. Confira com `/mcp` e peca a IA para explicar o que e um Item,
 citando as fontes retornadas.
 
-Print da configuracao:
-
-![Print: Configuracao MCP Pluggy](evidencias/Print%2001.png)
-
-> O print deve mostrar: a tela de configuracao de servidor MCP com a URL
-> `https://mcp.pluggy.ai/mcp` preenchida e, opcionalmente, a resposta da IA ao
-> comando `/mcp`. **Nunca exponha chaves ou tokens.**
+Sem prints de configuracao versionados entre as evidencias disponiveis. Use a secao 15 para as evidencias visuais renomeadas.
 
 ### 3.2 Servidor Plaid (STDIO)
 
@@ -80,14 +74,7 @@ Exemplo de configuracao (ajuste o caminho do `uvx` para o seu computador):
 > **Atenção:** substitua `CAMINHO_ABSOLUTO_PARA_UVX` pelo caminho real do `uvx.exe`
 > no seu computador. Nunca commite este arquivo com credenciais reais.
 
-Print da configuracao:
-
-![Print: Configuracao MCP Plaid](evidencias/Print%2002.png)
-
-> O print deve mostrar: o bloco JSON da configuracao MCP (com credenciais
-> **borradas ou substituídas por `<oculto>`**) e a resposta da IA listando
-> contas/saldos ficticios. **Nunca exponha `PLAID_CLIENT_ID` ou
-> `PLAID_SECRET`.**
+Sem prints de configuracao versionados entre as evidencias disponiveis. Use a secao 15 para as evidencias visuais renomeadas.
 
 ### 3.3 Verificacao cruzada
 
@@ -183,8 +170,23 @@ core-finance/
   tests/
     insights.test.js
   evidencias/
-    Print 01.png
-    Print 01.1.png
+    app-core-finance-conversa-gastos-categoria.png
+    plaid-sandbox-contas-saldos.png
+    plaid-sandbox-contas-transacoes-categorias.png
+    plaid-sandbox-transacoes-convencao-sinais.png
+    pluggy-docs-mcp-conceito-pluggy-item.png
+    pluggy-docs-mcp-conceitos-connector-item-product.png
+    pluggy-docs-mcp-endpoints-investments-recurring-payments.png
+    pluggy-docs-mcp-endpoints-transactions.png
+    pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png
+    pluggy-docs-mcp-referencia-transaction-autenticacao.png
+    pluggy-endpoint-transactions-legado-migracao-v2.png
+    pluggy-endpoint-transactions-legado-parametros.png
+    pluggy-endpoint-transactions-v2-get.png
+    pluggy-endpoint-transactions-v2-parametros.png
+    pluggy-endpoint-transactions-v2-resposta-200-legado.png
+```
+
 ## 8. Funcionalidades implementadas vs. documentadas vs. planejadas
 
 ### Implementadas (no codigo)
@@ -208,21 +210,6 @@ core-finance/
 - Persistencia em banco + fila (hoje em memoria).
 - Testes de contrato para tools MCP com mocks.
 - Classificador supervisionado por categoria.
-
-
-    Print 02.png
-    Print 02.1.png
-    Print 02.2.png
-    Print 02.3.png
-    Print 03.png
-    Print 03.1.png
-    Print 03.3.png
-    Print 03.4.png
-    Print 03.5.png
-    Print 04.png
-    Print 04.1.png
-    Print 04.2.png
-```
 
 ## 9. Acuracia de categorizacao (avaliacao)
 
@@ -278,25 +265,25 @@ flowchart LR
 ## 15. Evidencias visuais
 
 ### Aplicativo publicado
-- `evidencias/app-core-finance-conversa-gastos-categoria.png` — Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".
+- ![Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".](evidencias/app-core-finance-conversa-gastos-categoria.png) — Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".
 
 ### Conceitos e endpoints da Pluggy (consulta via MCP Docs)
 > A Pluggy foi consultada via MCP Docs. Isso nao comprova integracao bancaria funcional: a aplicacao atual (Etapa 1) nao chama a API da Pluggy em runtime.
-- `evidencias/pluggy-docs-mcp-conceito-pluggy-item.png` — O que e a Pluggy e o conceito de Item.
-- `evidencias/pluggy-docs-mcp-conceitos-connector-item-product.png` — Conceitos Connector, Item e Product.
-- `evidencias/pluggy-docs-mcp-endpoints-transactions.png` — Endpoints relacionados a Transactions.
-- `evidencias/pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png` — Endpoints legado, retrieve e atualizacao de categoria.
-- `evidencias/pluggy-docs-mcp-endpoints-investments-recurring-payments.png` — Endpoints de investimentos e recurring-payments.
-- `evidencias/pluggy-docs-mcp-referencia-transaction-autenticacao.png` — Referencia Transaction e autenticacao com token proprio.
-- `evidencias/pluggy-endpoint-transactions-v2-get.png` — Endpoint recomendado GET /v2/transactions.
-- `evidencias/pluggy-endpoint-transactions-v2-parametros.png` — Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).
-- `evidencias/pluggy-endpoint-transactions-v2-resposta-200-legado.png` — Estrutura da resposta 200 (results, next) e inicio do endpoint legado.
-- `evidencias/pluggy-endpoint-transactions-legado-parametros.png` — Parametros do endpoint legado.
-- `evidencias/pluggy-endpoint-transactions-legado-migracao-v2.png` — Final dos parametros legados e recomendacao de migracao para v2.
+- ![O que e a Pluggy e o conceito de Item.](evidencias/pluggy-docs-mcp-conceito-pluggy-item.png) — O que e a Pluggy e o conceito de Item.
+- ![Conceitos Connector, Item e Product.](evidencias/pluggy-docs-mcp-conceitos-connector-item-product.png) — Conceitos Connector, Item e Product.
+- ![Endpoints relacionados a Transactions.](evidencias/pluggy-docs-mcp-endpoints-transactions.png) — Endpoints relacionados a Transactions.
+- ![Endpoints legado, retrieve e atualizacao de categoria.](evidencias/pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png) — Endpoints legado, retrieve e atualizacao de categoria.
+- ![Endpoints de investimentos e recurring-payments.](evidencias/pluggy-docs-mcp-endpoints-investments-recurring-payments.png) — Endpoints de investimentos e recurring-payments.
+- ![Referencia Transaction e autenticacao com token proprio.](evidencias/pluggy-docs-mcp-referencia-transaction-autenticacao.png) — Referencia Transaction e autenticacao com token proprio.
+- ![Endpoint recomendado GET /v2/transactions.](evidencias/pluggy-endpoint-transactions-v2-get.png) — Endpoint recomendado GET /v2/transactions.
+- ![Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).](evidencias/pluggy-endpoint-transactions-v2-parametros.png) — Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).
+- ![Estrutura da resposta 200 (results, next) e inicio do endpoint legado.](evidencias/pluggy-endpoint-transactions-v2-resposta-200-legado.png) — Estrutura da resposta 200 (results, next) e inicio do endpoint legado.
+- ![Parametros do endpoint legado.](evidencias/pluggy-endpoint-transactions-legado-parametros.png) — Parametros do endpoint legado.
+- ![Final dos parametros legados e recomendacao de migracao para v2.](evidencias/pluggy-endpoint-transactions-legado-migracao-v2.png) — Final dos parametros legados e recomendacao de migracao para v2.
 
 ### Consultas do Plaid Sandbox
 > Os dados exibidos no aplicativo e os dados retornados pelo Plaid Sandbox sao demonstracoes distintas; nao sao o mesmo conjunto de dados.
-- `evidencias/plaid-sandbox-contas-saldos.png` — Tabela de contas e saldos (parte das 14 contas).
-- `evidencias/plaid-sandbox-contas-transacoes-categorias.png` — Contas restantes e resumo de 48 transacoes por categoria.
-- `evidencias/plaid-sandbox-transacoes-convencao-sinais.png` — Continuacao do resumo de transacoes e convencao de sinais.
+- ![Tabela de contas e saldos (parte das 14 contas).](evidencias/plaid-sandbox-contas-saldos.png) — Tabela de contas e saldos (parte das 14 contas).
+- ![Contas restantes e resumo de 48 transacoes por categoria.](evidencias/plaid-sandbox-contas-transacoes-categorias.png) — Contas restantes e resumo de 48 transacoes por categoria.
+- ![Continuacao do resumo de transacoes e convencao de sinais.](evidencias/plaid-sandbox-transacoes-convencao-sinais.png) — Continuacao do resumo de transacoes e convencao de sinais.
 
