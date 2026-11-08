@@ -1,9 +1,13 @@
 import { answer } from '@/lib/core-engine'
+import { enforceApiRateLimit } from '@/lib/api-rate-limit'
 import { getSavedFinanceSnapshot } from '@/lib/get-finance-snapshot'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
+  const rateLimitResponse = await enforceApiRateLimit(req, 'core-chat', 20)
+  if (rateLimitResponse) return rateLimitResponse
+
   const body = (await req.json().catch(() => null)) as {
     message?: unknown
   } | null
