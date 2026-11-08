@@ -22,7 +22,7 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 | Prompt/especificação do builder (v0) | Brief reconstruído abaixo. O prompt original literal não foi preservado no repositório; portanto, este é um resumo fiel do escopo, não uma citação. |
 | MCP Pluggy | Servidor remoto Streamable HTTP: `https://mcp.pluggy.ai/mcp`; pesquisa documentada em `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP Plaid Sandbox | Servidor local STDIO via `uvx mcp-server-plaid`; configuração ilustrativa com placeholders abaixo. Capturas em `evidencias/plaid-sandbox-*.png`. |
-| Melhoria escolhida | **Etapa 2: integração e persistência no servidor** — rota webhook Next.js, adaptador da API Pluggy Sandbox, snapshot no Supabase, deduplicação, lease de retentativa, visão de saúde e alerta por e-mail. |
+| Melhoria escolhida | **Etapa 2: integração e persistência no servidor** — webhook Pluggy (atende ao tópico de webhooks da p. 18 do guia), adaptador da API Pluggy Sandbox, snapshot no Supabase, deduplicação, lease de retentativa, visão de saúde e alerta por e-mail. |
 | Evidências da aplicação final | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png` e `pluggy-sandbox-chat.png`. |
 
 ### Brief do builder e ajustes posteriores
@@ -112,7 +112,7 @@ flowchart TD
 | `GET /api/insights` | Calcula os indicadores atualmente implementados. |
 | `POST /api/webhooks/pluggy` | Valida notificação Pluggy, atualiza dados e persiste o snapshot. |
 
-A aplicação Express em `backend/` é um protótipo separado, não o backend que atende à aplicação Next.js implantada.
+A aplicação Express sob backend/ é um protótipo separado, não o backend que atende à aplicação Next.js implantada. Ela preserva um exemplo de verificação de assinatura ES256 de webhooks Plaid para o laboratório; o runtime Next.js implantado não expõe uma rota Plaid.
 
 ## Dados e persistência
 
@@ -132,11 +132,11 @@ O último snapshot Pluggy Sandbox validado continha 2 contas e 41 transações. 
 - O assistente é determinístico; não há LLM nem servidor MCP próprio integrado.
 - A identificação de estabelecimentos no chat usa uma pequena lista fixa de palavras-chave (por exemplo, delivery, Uber, Netflix, Starbucks e Amazon); não é resolução geral de entidades.
 - A detecção de despesas recorrentes agrupa transações pelo nome do estabelecimento e verifica quantidade de ocorrências e dispersão dos valores. **Não valida o intervalo entre cobranças nem comprova que o pagamento é uma assinatura.**
-- A projeção de fim de mês usa a data atual e uma média diária simples do mês até o momento. Não é backtest histórico nem previsão ajustada à sazonalidade; deve ser interpretada apenas como heurística indicativa.
+- A projeção de fim de mês usa a data da transação mais recente (ou a data do snapshot quando não há transações) e uma média diária simples para esse mês de referência. Não é backtest histórico nem previsão ajustada à sazonalidade; deve ser interpretada apenas como heurística indicativa.
 - A detecção de anomalias é uma regra estatística simples sobre a amostra disponível, não um modelo treinado.
 - O webhook é síncrono; não existe fila durável em segundo plano.
 - O webhook utiliza segredo compartilhado em cabeçalho e comparação em tempo constante, **não assinatura HMAC do corpo**. Proteção específica contra replay ainda não foi implementada.
-- Rotas públicas e ausência de rate limit exigem revisão de segurança antes de qualquer uso com dados reais.
+- As rotas públicas têm limites por IP em nível de aplicação (20 requisições/minuto para o chat; 60/minuto para snapshot e indicadores), persistidos no Supabase. O limitador bloqueia a requisição se o armazenamento estiver indisponível. Isso não substitui WAF nem uma revisão completa antes de qualquer uso com dados reais.
 - O histórico Sandbox não equivale a um extrato completo nem a uma série histórica de saldos.
 
 ## Variáveis de ambiente
@@ -205,7 +205,7 @@ Todos os registros financeiros nas capturas são dados de teste ou Sandbox.
 - [ ] Criar servidor MCP próprio com ferramentas financeiras seguras e somente leitura.
 - [ ] Integrar LLM com chamadas explícitas de ferramentas e autorização no servidor.
 - [ ] Criar conjunto de avaliação de perguntas/respostas (correção, fundamentação, recusas e regressões).
-- [ ] Implementar proteção contra replay, processamento assíncrono durável, rate limiting e revisão ampliada de controle de acesso.
+- [ ] Implementar proteção contra replay, processamento assíncrono durável, proteção em nível WAF e revisão ampliada de controle de acesso.
 - [ ] Gravar demonstração de 60–90 segundos para a entrega DIO e o portfólio de recrutadores.
 
 ## Segurança

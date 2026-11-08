@@ -22,7 +22,7 @@ Core Finance combines a financial dashboard with a Portuguese conversational int
 | Builder (v0) prompt/specification | Reconstructed brief below. The original verbatim prompt was not retained in the repository, so this is a faithful scope summary, not a quotation. |
 | MCP: Pluggy documentation | Streamable HTTP endpoint: `https://mcp.pluggy.ai/mcp`; documentation research screenshots in `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP: Plaid Sandbox lab | Local STDIO server using `uvx mcp-server-plaid`; credentials are placeholders in the example below. Plaid screenshots in `evidencias/plaid-sandbox-*.png`. |
-| Selected improvement | **Stage 2: server-side data integration and persistence** — Next.js webhook route, Pluggy Sandbox API adapter, Supabase snapshot storage, event deduplication, retry lease, health view, and failure email. |
+| Selected improvement | **Stage 2: server-side data integration and persistence** — Pluggy webhook (covering the webhook topic on page 18 of the guide), Pluggy Sandbox API adapter, Supabase snapshot storage, event deduplication, retry lease, health view, and failure email. |
 | Evidence of final implementation | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png`, and `pluggy-sandbox-chat.png`. |
 
 ### Builder brief and changes after generation
@@ -112,7 +112,7 @@ flowchart TD
 | `GET /api/insights` | Calculates the currently implemented indicators. |
 | `POST /api/webhooks/pluggy` | Validates a Pluggy notification, refreshes data, and persists the snapshot. |
 
-The Express application in `backend/` is a separate prototype, not the backend serving the deployed Next.js application.
+The Express application under backend/ is a separate prototype, not the backend serving the deployed Next.js application. It retains a Plaid ES256 webhook-signature verification example for the learning lab; the deployed Next.js runtime does not expose a Plaid route.
 
 ## Data and persistence
 
@@ -132,11 +132,11 @@ The last validated Pluggy Sandbox snapshot contained 2 accounts and 41 transacti
 - The assistant is deterministic; no LLM or application-owned MCP server is integrated.
 - Merchant matching in chat uses a small fixed keyword list (for example, delivery, Uber, Netflix, Starbucks, Amazon); it is not a general merchant entity-resolution feature.
 - Recurring-expense detection groups transactions by merchant and checks occurrence count and amount dispersion. It does **not** validate a billing interval or prove that a payment is a subscription.
-- The month-end projection uses the current date and a simple month-to-date daily average. It is not a historical backtest or a forecast calibrated to seasonality; interpret it as an indicative heuristic only.
+- The month-end projection uses the date of the most recent transaction (or snapshot date when no transaction date is available) and a simple daily average for that reference month. It is not a historical backtest or a forecast calibrated to seasonality; interpret it as an indicative heuristic only.
 - Anomaly detection is a simple statistical rule over the available sample, not a trained model.
 - Webhook processing is synchronous; there is no durable background queue.
 - The webhook uses a shared custom header secret and timing-safe comparison, **not HMAC signing of the request body**. A replay-protection mechanism is not implemented.
-- Public API routes and rate limiting require a further security review before any real-data use.
+- Public API routes use application-level rate limits (20 requests/minute for chat; 60 requests/minute for snapshot and insights), backed by Supabase. The limiter fails closed if its store is unavailable. These controls do not replace a WAF or a full security review before any real-data use.
 - Sandbox history is not a complete bank statement or historical balance feed.
 
 ## Technology stack
@@ -221,7 +221,7 @@ All financial records in the screenshots are test or Sandbox data.
 - [ ] Add a project-owned MCP server exposing safe, read-only financial tools.
 - [ ] Integrate an LLM with explicit tool calling and server-side authorization.
 - [ ] Build a question/answer evaluation set (correctness, groundedness, refusal, and regression tests).
-- [ ] Add replay protection, durable asynchronous processing, rate limiting, and expanded access-control review.
+- [ ] Add replay protection, durable asynchronous processing, WAF-level protection, and expanded access-control review.
 - [ ] Record a 60–90 second walkthrough for the DIO submission and recruiter portfolio.
 
 ## Security
