@@ -79,12 +79,12 @@ export function CoreChat({ open, onOpenChange }: { open: boolean; onOpenChange: 
         aria-label="Abrir chat do Core"
         aria-expanded={open}
         className={cn(
-          'fixed right-4 bottom-24 z-40 flex items-center gap-2 rounded-full bg-coral px-4 py-3.5 font-semibold text-ink shadow-[0_12px_32px_-8px_color-mix(in_oklab,var(--coral)_70%,transparent)] transition-[transform,opacity] duration-200 hover:scale-105 md:right-8 md:bottom-8',
+          'fixed right-4 bottom-24 z-40 flex items-center gap-2 rounded-full bg-coral px-4 py-3.5 font-semibold text-ink shadow-[0_12px_32px_-8px_color-mix(in_oklab,var(--coral)_70%,transparent)] transition-[transform,opacity] duration-200 hover:scale-105 lg:right-8 lg:bottom-8',
           open && 'pointer-events-none scale-90 opacity-0',
         )}
       >
         <MessageCircle className="size-5" aria-hidden="true" />
-        <span className="hidden sm:inline">Falar com o Core</span>
+        <span className="hidden md:inline">Falar com o Core</span>
       </button>
 
       <div
@@ -168,7 +168,8 @@ export function CoreChat({ open, onOpenChange }: { open: boolean; onOpenChange: 
               <ArrowUp className="size-5" aria-hidden="true" />
             </button>
           </div>
-          <div className="mt-3 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="list" aria-label="Sugestões de perguntas">
+          <div className="relative mt-3 -mx-4 after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-7 after:bg-gradient-to-l after:from-surface after:to-transparent">
+            <div role="list" aria-label="Sugestões de perguntas" className="scrollbar-hidden flex gap-2 overflow-x-auto px-4 pb-1">
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}
@@ -181,6 +182,7 @@ export function CoreChat({ open, onOpenChange }: { open: boolean; onOpenChange: 
                 {s}
               </button>
             ))}
+            </div>
           </div>
         </form>
       </aside>

@@ -52,7 +52,7 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
               label="Evolução do saldo em contas"
             />
           ) : (
-            <div className="max-w-48 text-right text-xs text-text-muted">
+            <div className="max-w-48 text-left text-xs text-text-muted sm:text-right">
               <p>Histórico de saldo não fornecido pela instituição.</p>
               <a
                 href="#flow-trend-title"

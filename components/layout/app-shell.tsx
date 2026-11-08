@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex">
         <Sidebar active={active} onSelect={select} collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
         <div className="min-w-0 flex-1">
-          <main className="mx-auto w-full max-w-6xl px-4 pb-32 md:px-8 md:pb-16">
+          <main className="mx-auto w-full max-w-6xl px-4 pb-48 md:px-8 md:pb-40 lg:pb-24">
             <Header />
             {children}
           </main>

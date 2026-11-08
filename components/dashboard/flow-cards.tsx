@@ -6,19 +6,34 @@ import { formatPercent } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
-function Change({ value }: { value: number | null }) {
-  if (value == null) return <span className="text-xs text-text-muted">Sem base de comparação</span>
-  const up = value >= 0
-  const Icon = up ? ArrowUp : ArrowDown
+function Change({
+  value,
+  higherIsBetter,
+}: {
+  value: number | null
+  higherIsBetter: boolean
+}) {
+  if (value == null) {
+    return <span className="text-xs text-text-muted">Sem base de comparação</span>
+  }
+
+  if (Math.abs(value) < 0.05) {
+    return <span className="text-xs font-medium text-text-muted">Sem variação</span>
+  }
+
+  const increased = value > 0
+  const Icon = increased ? ArrowUp : ArrowDown
+  const favorable = increased === higherIsBetter
+
   return (
     <span
       className={cn(
         'inline-flex items-center gap-1 text-xs font-semibold tabular-nums',
-        up ? 'text-inflow' : 'text-outflow',
+        favorable ? 'text-inflow' : 'text-outflow',
       )}
     >
       <Icon className="size-3.5" aria-hidden="true" />
-      <span className="sr-only">{up ? 'Aumento de' : 'Queda de'}</span>
+      <span className="sr-only">{increased ? 'Aumento de' : 'Queda de'}</span>
       {formatPercent(Math.abs(value))}
       <span className="font-medium text-text-muted">vs. mês anterior</span>
     </span>
@@ -40,14 +55,16 @@ export function FlowCards({ data }: { data: SandboxSnapshot }) {
       label: 'Entradas',
       value: now.inflow,
       change: variation(now.inflow, prev.inflow),
+      higherIsBetter: true,
       icon: ArrowDownLeft,
       tone: 'text-inflow bg-inflow/12',
       valueTone: 'text-inflow',
     },
     {
-      label: 'Saídas',
+      label: 'Saídas (sem transferências)',
       value: now.outflow,
       change: variation(now.outflow, prev.outflow),
+      higherIsBetter: false,
       icon: ArrowUpRight,
       tone: 'text-outflow bg-outflow/12',
       valueTone: 'text-outflow',
@@ -62,13 +79,13 @@ export function FlowCards({ data }: { data: SandboxSnapshot }) {
             <span className={cn('flex size-8 items-center justify-center rounded-full', c.tone)}>
               <c.icon className="size-4" aria-hidden="true" />
             </span>
-            <p className="text-sm font-medium text-text-muted">{c.label}</p>
+            <p className="min-w-0 text-sm font-medium text-text-muted">{c.label}</p>
           </div>
           <p className={cn('mt-3 text-lg font-bold tracking-tight tabular-nums sm:text-2xl', c.valueTone)}>
             <CountUp value={c.value} />
           </p>
           <p className="mt-0.5 mb-2 text-xs text-text-muted">{periodLabel}</p>
-          <Change value={c.change} />
+          <Change value={c.change} higherIsBetter={c.higherIsBetter} />
         </Surface>
       ))}
     </div>
