@@ -136,7 +136,7 @@ The last validated Pluggy Sandbox snapshot contained 2 accounts and 41 transacti
 - Anomaly detection is a simple statistical rule over the available sample, not a trained model.
 - Webhook processing is synchronous; there is no durable background queue.
 - The webhook uses a shared custom header secret and timing-safe comparison, **not HMAC signing of the request body**. A replay-protection mechanism is not implemented.
-- Public API routes use application-level rate limits (20 requests/minute for chat; 60 requests/minute for snapshot and insights), backed by Supabase. The limiter fails closed if its store is unavailable. These controls do not replace a WAF or a full security review before any real-data use.
+- Public API routes use application-level rate limits (20 requests/minute for chat; 60 requests/minute for snapshot and insights), backed by Supabase. IP addresses are pseudonymized with HMAC-SHA256 using the independent `API_RATE_LIMIT_HMAC_SECRET`; the raw IP is never stored in the rate-limit key. The limiter fails closed if its secret or Supabase store is unavailable. A daily pg_cron job and opportunistic cleanup remove old counters. These controls do not replace a WAF or a full security review before any real-data use.
 - Sandbox history is not a complete bank statement or historical balance feed.
 
 ## Technology stack
@@ -157,7 +157,7 @@ The last validated Pluggy Sandbox snapshot contained 2 accounts and 41 transacti
 
 ## Environment variables
 
-Copy `.env.example` to a local environment file and set values on the server. Never commit real credentials.
+Copy `.env.example` to a local environment file and set values on the server. Generate `API_RATE_LIMIT_HMAC_SECRET` with `openssl rand -base64 32` and configure it independently in Vercel Preview and Production. Never reuse `SUPABASE_SECRET_KEY` for this purpose or commit real credentials.
 
 | Variable | Purpose |
 |---|---|
@@ -165,6 +165,7 @@ Copy `.env.example` to a local environment file and set values on the server. Ne
 | `PLUGGY_ITEM_ID` | Configured Sandbox Item |
 | `PLUGGY_WEBHOOK_SECRET` | Shared secret expected in the webhook header |
 | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Server-side Supabase access |
+| `API_RATE_LIMIT_HMAC_SECRET` | Independent random secret (at least 32 bytes) for HMAC IP pseudonymization; configure separately in Vercel Preview and Production |
 | `GMAIL_USER` | Gmail account used for SMTP |
 | `GMAIL_APP_PASSWORD` | Google App Password (not the normal account password) |
 | `ALERT_EMAIL_TO` | Recipient of webhook failure alerts |

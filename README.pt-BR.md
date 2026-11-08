@@ -136,12 +136,12 @@ O último snapshot Pluggy Sandbox validado continha 2 contas e 41 transações. 
 - A detecção de anomalias é uma regra estatística simples sobre a amostra disponível, não um modelo treinado.
 - O webhook é síncrono; não existe fila durável em segundo plano.
 - O webhook utiliza segredo compartilhado em cabeçalho e comparação em tempo constante, **não assinatura HMAC do corpo**. Proteção específica contra replay ainda não foi implementada.
-- As rotas públicas têm limites por IP em nível de aplicação (20 requisições/minuto para o chat; 60/minuto para snapshot e indicadores), persistidos no Supabase. O limitador bloqueia a requisição se o armazenamento estiver indisponível. Isso não substitui WAF nem uma revisão completa antes de qualquer uso com dados reais.
+- As rotas públicas têm limites por IP em nível de aplicação (20 requisições/minuto para o chat; 60/minuto para snapshot e indicadores), persistidos no Supabase. Os IPs são pseudonimizados com HMAC-SHA256 usando o segredo independente `API_RATE_LIMIT_HMAC_SECRET`; o IP original nunca é armazenado na chave do limitador. O limitador bloqueia a requisição se o segredo ou o armazenamento Supabase estiver indisponível. Uma rotina diária pg_cron e uma limpeza oportunista removem contadores antigos. Isso não substitui WAF nem uma revisão completa antes de qualquer uso com dados reais.
 - O histórico Sandbox não equivale a um extrato completo nem a uma série histórica de saldos.
 
 ## Variáveis de ambiente
 
-Copie `.env.example` para um arquivo local e configure os valores no servidor. Nunca versione credenciais reais.
+Copie `.env.example` para um arquivo local e configure os valores no servidor. Gere `API_RATE_LIMIT_HMAC_SECRET` com `openssl rand -base64 32` e configure-o separadamente nos ambientes Preview e Production da Vercel. Não reutilize `SUPABASE_SECRET_KEY` para essa finalidade nem versione credenciais reais.
 
 | Variável | Finalidade |
 |---|---|
@@ -149,6 +149,7 @@ Copie `.env.example` para um arquivo local e configure os valores no servidor. N
 | `PLUGGY_ITEM_ID` | Item Sandbox configurado |
 | `PLUGGY_WEBHOOK_SECRET` | Segredo esperado no cabeçalho do webhook |
 | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Acesso server-side ao Supabase |
+| `API_RATE_LIMIT_HMAC_SECRET` | Segredo aleatório independente (mínimo de 32 bytes) para pseudonimização HMAC dos IPs; configure separadamente na Vercel Preview e Production |
 | `GMAIL_USER` | Conta Gmail usada no SMTP |
 | `GMAIL_APP_PASSWORD` | Senha de app do Google, não a senha normal da conta |
 | `ALERT_EMAIL_TO` | Destinatário dos alertas de falha do webhook |

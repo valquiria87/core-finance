@@ -1,11 +1,17 @@
-import { createHmac } from 'node:crypto'
 import { getSupabaseAdmin } from './supabase-admin'
+import {
+  createRateLimitBucketKey,
+  getRateLimitSecret,
+  resolveClientIdentity,
+} from './api-rate-limit-utils'
 
 type RateLimitRow = {
   allowed: boolean
   remaining: number
   reset_at: string
 }
+
+type RateLimitError = Error & { code?: string }
 
 export async function enforceApiRateLimit(
   request: Request,
@@ -14,38 +20,51 @@ export async function enforceApiRateLimit(
   windowSeconds = 60,
 ): Promise<Response | null> {
   try {
-    const secret = process.env.SUPABASE_SECRET_KEY
-    if (!secret) {
-      throw new Error('Rate limiter secret is not configured')
+    const secret = getRateLimitSecret(
+      process.env.API_RATE_LIMIT_HMAC_SECRET,
+    )
+    const identity = resolveClientIdentity(
+      request,
+      process.env.VERCEL === '1',
+    )
+
+    if (identity.untrustedRuntime) {
+      console.warn('Rate limiter is running outside Vercel; request IP headers ignored')
+    }
+    if (identity.missingIp) {
+      console.warn('Vercel request did not include a valid client IP header')
     }
 
-    // Vercel overwrites x-real-ip with the client IP at its edge.
-    // Never trust a caller-provided X-Forwarded-For value as the primary identity.
-    const clientIp = request.headers.get('x-real-ip')?.trim() || 'unknown'
-    const clientHash = createHmac('sha256', secret)
-      .update(clientIp)
-      .digest('hex')
-    const bucketKey = `${scope}:${clientHash}`
+    const effectiveLimit = identity.missingIp
+      ? Math.min(limit * 10, 1000)
+      : limit
+    const bucketKey = createRateLimitBucketKey(
+      scope,
+      identity.value,
+      secret,
+    )
 
     const supabase = getSupabaseAdmin()
     const { data, error } = await supabase.rpc('consume_api_rate_limit', {
       p_bucket_key: bucketKey,
-      p_limit: limit,
+      p_limit: effectiveLimit,
       p_window_seconds: windowSeconds,
     })
 
     if (error) {
-      throw new Error(`Rate limit storage failed: ${error.message}`)
+      const rpcError = new Error('Rate limit RPC failed') as RateLimitError
+      rpcError.code = error.code || 'RATE_LIMIT_RPC_ERROR'
+      throw rpcError
     }
 
     const result = (data as RateLimitRow[] | null)?.[0]
     if (!result) {
-      throw new Error('Rate limiter returned no decision')
+      const emptyResultError = new Error('Rate limiter returned no decision') as RateLimitError
+      emptyResultError.code = 'RATE_LIMIT_EMPTY_RESULT'
+      throw emptyResultError
     }
 
-    if (result.allowed) {
-      return null
-    }
+    if (result.allowed) return null
 
     const resetAt = new Date(result.reset_at)
     const retryAfter = Math.max(
@@ -60,14 +79,18 @@ export async function enforceApiRateLimit(
         headers: {
           'Cache-Control': 'no-store',
           'Retry-After': String(retryAfter),
-          'X-RateLimit-Limit': String(limit),
+          'X-RateLimit-Limit': String(effectiveLimit),
           'X-RateLimit-Remaining': '0',
           'X-RateLimit-Reset': String(Math.ceil(resetAt.getTime() / 1000)),
         },
       },
     )
   } catch (error) {
-    console.error('API rate limiter unavailable:', error)
+    const rateLimitError = error as RateLimitError
+    console.error('API rate limiter unavailable:', {
+      code: rateLimitError.code || 'RATE_LIMIT_UNEXPECTED_ERROR',
+      message: rateLimitError.message,
+    })
     return Response.json(
       { error: 'Serviço temporariamente indisponível. Tente novamente.' },
       { status: 503, headers: { 'Cache-Control': 'no-store' } },
