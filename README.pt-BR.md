@@ -23,7 +23,8 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 | MCP Pluggy | Servidor remoto Streamable HTTP: `https://mcp.pluggy.ai/mcp`; pesquisa documentada em `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP Plaid Sandbox | Servidor local STDIO via `uvx` + `mcp-server-plaid`, com `PLAID_CLIENT_ID` e `PLAID_SECRET` fornecidos como variáveis de ambiente locais. As capturas mostram resultados retornados; as lacunas de comprovação de P05/P06/P07 estão registradas em [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). |
 | Melhoria escolhida | **Etapa 2: integração e persistência no servidor** — webhook Pluggy (atende ao tópico de webhooks da p. 18 do guia), adaptador da API Pluggy Sandbox, snapshot no Supabase, deduplicação, lease de retentativa, visão de saúde e alerta por e-mail. |
-| Auditoria das evidências MCP | A situação de P01–P07, as provas ausentes e a diferença entre o ensaio Plaid do guia do instrutor e as capturas do projeto estão em [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). \n| Evidências da aplicação final | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png` e `pluggy-sandbox-chat.png`. |
+| Auditoria das evidências MCP | A situação de P01–P07, as provas ausentes e a diferença entre o ensaio Plaid do guia do instrutor e as capturas do projeto estão em [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md).
+| Evidências da aplicação final | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png` e `pluggy-sandbox-chat.png`. |
 
 ### Brief do builder e ajustes posteriores
 
