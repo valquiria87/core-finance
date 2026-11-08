@@ -1,4 +1,4 @@
-'use client'
+
 
 import { ArrowUp, MessageCircle, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
