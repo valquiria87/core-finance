@@ -395,7 +395,7 @@ const CONCEPTS: { match: string[]; text: string }[] = [
 },
 ]
 
-export function answer(
+function answerForMonth(
   question: string,
   data: SandboxSnapshot,
 ): ChatBlock[] {
@@ -518,5 +518,50 @@ export function answer(
       type: 'text',
       text: 'Ainda não sei responder isso com os dados de teste. Tente perguntar sobre saldo, gastos do mês, gastos por categoria ou “o que é um Item na Pluggy?”.',
     },
+  ]
+}
+/** Se a pergunta pede o mês corrente sem movimentações, explicita o último mês disponível. */
+export function answer(question: string, data: SandboxSnapshot): ChatBlock[] {
+  const q = normalize(question)
+  const asksCurrentMonth = has(
+    q,
+    'este mes',
+    'neste mes',
+    'mes atual',
+    'no mes atual',
+    'this month',
+  )
+
+  if (!asksCurrentMonth) return answerForMonth(question, data)
+
+  const currentMonth = monthKey(data.asOf)
+  const hasCurrentMonthTransactions = data.transactions.some(
+    (transaction) => monthKey(transaction.date) === currentMonth,
+  )
+
+  if (hasCurrentMonthTransactions) return answerForMonth(question, data)
+
+  const latestDate = data.transactions.reduce(
+    (latest, transaction) =>
+      transaction.date > latest ? transaction.date : latest,
+    '',
+  )
+
+  if (!latestDate) {
+    return [{
+      type: 'text',
+      text: 'Em ' + monthName(currentMonth) + ' ainda não há movimentações nem meses anteriores com dados disponíveis.',
+    }]
+  }
+
+  const lastMonth = monthKey(latestDate)
+  if (lastMonth === currentMonth) return answerForMonth(question, data)
+
+  return [
+    {
+      type: 'text',
+      text: 'Em ' + monthName(currentMonth) + ' ainda não há movimentações. O último mês com dados é ' + monthName(lastMonth) + ':',
+    },
+    ...answerForMonth(question, data),
   ]
 }
