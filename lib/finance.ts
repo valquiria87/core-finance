@@ -8,6 +8,16 @@ export function monthKey(iso: string) {
   return iso.slice(0, 7)
 }
 
+/** Usa o mês da movimentação mais recente, evitando painéis vazios quando a sandbox está defasada. */
+export function latestTransactionDate(txs: Transaction[], fallbackDate: string) {
+  const latest = txs.reduce(
+    (date, transaction) =>
+      !date || transaction.date > date ? transaction.date : date,
+    '',
+  )
+  return latest || fallbackDate
+}
+
 export function previousMonthKey(key: string) {
   const [y, m] = key.split('-').map(Number)
   const d = new Date(Date.UTC(y, m - 2, 1))
@@ -40,6 +50,25 @@ export function periodFlows(txs: Transaction[], key: string) {
 export function variation(current: number, previous: number) {
   if (previous === 0) return null
   return ((current - previous) / previous) * 100
+}
+
+/** Movimentação líquida acumulada desde a primeira data disponível; não representa saldo bancário. */
+export function cumulativeCashFlow(txs: Transaction[]) {
+  const daily = new Map<string, number>()
+  for (const transaction of txs) {
+    daily.set(
+      transaction.date,
+      (daily.get(transaction.date) ?? 0) - transaction.amount,
+    )
+  }
+
+  let cumulative = 0
+  return [...daily.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, net]) => {
+      cumulative += net
+      return { date, net, cumulative }
+    })
 }
 
 export interface CategorySlice {
@@ -114,4 +143,56 @@ export function groupByDay(txs: Transaction[]) {
     groups.set(t.date, list)
   }
   return [...groups.entries()].map(([date, items]) => ({ date, items }))
+}
+
+export interface TransactionFilters {
+  from?: string
+  to?: string
+  category?: CategoryId
+  merchant?: string
+  includePending?: boolean
+}
+
+/** Filtra transações por período, categoria e estabelecimento. */
+export function filterTransactions(
+  txs: Transaction[],
+  filters: TransactionFilters = {},
+): Transaction[] {
+  const merchantQuery = filters.merchant
+    ?.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+
+  return txs.filter((t) => {
+    if (filters.from && t.date < filters.from) return false
+    if (filters.to && t.date > filters.to) return false
+    if (filters.category && t.category !== filters.category) return false
+    if (!filters.includePending && t.pending) return false
+
+    if (merchantQuery) {
+      const merchant = t.merchant
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+
+      if (!merchant.includes(merchantQuery)) return false
+    }
+
+    return true
+  })
+}
+
+/** Soma despesas de consumo, excluindo transferências e pagamentos de dívida. */
+export function filteredConsumptionTotal(
+  txs: Transaction[],
+  filters: TransactionFilters = {},
+): number {
+  return filterTransactions(txs, filters)
+    .filter(
+      (t) =>
+        isOutflow(t) &&
+        !CATEGORIES[t.category].nonConsumption,
+    )
+    .reduce((total, t) => total + t.amount, 0)
 }

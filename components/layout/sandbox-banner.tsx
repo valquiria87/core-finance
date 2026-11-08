@@ -8,7 +8,9 @@ export function SandboxBanner() {
     >
       <FlaskConical className="size-3.5 shrink-0" aria-hidden="true" />
       <span>Demonstração · Dados fictícios</span>
-      <span className="hidden font-medium text-text-muted sm:inline">— banco de teste (sandbox Plaid), nada aqui é real.</span>
+      <span className="hidden font-medium text-text-muted sm:inline">
+        — Pluggy Sandbox, sem conexão com contas bancárias reais.
+      </span>
     </div>
   )
 }

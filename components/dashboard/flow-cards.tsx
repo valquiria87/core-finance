@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowDownLeft, ArrowUp, ArrowUpRight } from 'lucide-react'
 import { CountUp } from '@/components/finance/count-up'
 import { Surface } from '@/components/finance/surface'
-import { monthKey, periodFlows, previousMonthKey, variation } from '@/lib/finance'
+import { latestTransactionDate, monthKey, periodFlows, previousMonthKey, variation } from '@/lib/finance'
 import { formatPercent } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -20,15 +20,20 @@ function Change({ value }: { value: number | null }) {
       <Icon className="size-3.5" aria-hidden="true" />
       <span className="sr-only">{up ? 'Aumento de' : 'Queda de'}</span>
       {formatPercent(Math.abs(value))}
-      <span className="font-medium text-text-muted">vs. abril</span>
+      <span className="font-medium text-text-muted">vs. mês anterior</span>
     </span>
   )
 }
 
 export function FlowCards({ data }: { data: SandboxSnapshot }) {
-  const key = monthKey(data.asOf)
+  const key = monthKey(latestTransactionDate(data.transactions, data.asOf))
   const now = periodFlows(data.transactions, key)
   const prev = periodFlows(data.transactions, previousMonthKey(key))
+  const periodLabel = new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${key}-01T00:00:00Z`))
 
   const cards = [
     {
@@ -62,7 +67,7 @@ export function FlowCards({ data }: { data: SandboxSnapshot }) {
           <p className={cn('mt-3 text-lg font-bold tracking-tight tabular-nums sm:text-2xl', c.valueTone)}>
             <CountUp value={c.value} />
           </p>
-          <p className="mt-0.5 mb-2 text-xs text-text-muted">Maio até hoje</p>
+          <p className="mt-0.5 mb-2 text-xs text-text-muted">{periodLabel}</p>
           <Change value={c.change} />
         </Surface>
       ))}

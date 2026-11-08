@@ -31,7 +31,7 @@ export interface Transaction {
   merchant: string
   accountId: string
   category: CategoryId
-  /** Regra Plaid: valor positivo = saída de dinheiro (débito); negativo = entrada. */
+  /** Regra interna: valor positivo = saída de dinheiro; negativo = entrada. */
   amount: number
   pending: boolean
 }

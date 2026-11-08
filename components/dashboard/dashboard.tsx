@@ -7,8 +7,10 @@ import { AccountsSection } from './accounts-section'
 import { CategorySpending } from './category-spending'
 import { DashboardSkeleton } from './dashboard-skeleton'
 import { FlowCards } from './flow-cards'
+import { FlowTrend } from './flow-trend'
 import { HeroCard } from './hero-card'
 import { TransactionsList } from './transactions-list'
+import { InsightsSection } from './insights-section'
 
 export function Dashboard() {
   const { data, error, isLoading, mutate } = useSandbox()
@@ -39,9 +41,11 @@ export function Dashboard() {
         <HeroCard data={data} />
       </div>
       <AccountsSection accounts={data.accounts} />
+      <InsightsSection />
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-4 md:space-y-6">
           <FlowCards data={data} />
+          <FlowTrend data={data} />
           <CategorySpending data={data} />
         </div>
         <TransactionsList data={data} />

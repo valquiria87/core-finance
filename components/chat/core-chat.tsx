@@ -55,7 +55,7 @@ export function CoreChat({ open, onOpenChange }: { open: boolean; onOpenChange: 
     setPending(true)
     let blocks: ChatBlock[]
     try {
-      // Etapa 2: apontar para o backend/ (Node/Express) que orquestra modelo + MCP (Pluggy/Plaid).
+      // Consulta o endpoint Next.js, que busca os dados da Pluggy Sandbox.
       const res = await fetch('/api/core', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

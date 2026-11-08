@@ -9,7 +9,11 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
   const { cash, debt } = accountTotals(data.accounts)
   const credit = data.accounts.filter((a) => a.type === 'credit')
   const history = data.balanceHistory
-  const change = variation(history[history.length - 1], history[0])
+
+  const hasHistory = history.length >= 2
+  const change = hasHistory
+    ? variation(history[history.length - 1], history[0])
+    : null
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
@@ -25,11 +29,13 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <Landmark className="size-4" aria-hidden="true" />
           <h2 id="hero-cash">Dinheiro em contas</h2>
         </div>
+
         <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
           <div className="min-w-0">
             <p className="text-3xl font-extrabold tracking-tight tabular-nums sm:text-4xl md:text-5xl">
               <CountUp value={cash} />
             </p>
+
             {change != null && (
               <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-inflow/10 px-2.5 py-1 text-xs font-semibold text-inflow tabular-nums">
                 <ArrowUpRight className="size-3.5" aria-hidden="true" />
@@ -37,8 +43,27 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
               </p>
             )}
           </div>
-          <Sparkline data={history} width={160} height={56} label="Evolução do saldo em contas nos últimos 12 dias, em alta" />
+
+          {hasHistory ? (
+            <Sparkline
+              data={history}
+              width={160}
+              height={56}
+              label="Evolução do saldo em contas"
+            />
+          ) : (
+            <div className="max-w-48 text-right text-xs text-text-muted">
+              <p>Histórico de saldo não fornecido pela instituição.</p>
+              <a
+                href="#flow-trend-title"
+                className="mt-2 inline-block font-semibold text-coral underline-offset-4 hover:underline"
+              >
+                Ver movimentação acumulada
+              </a>
+            </div>
+          )}
         </div>
+
         <p className="mt-6 text-xs text-text-muted">
           Soma de conta corrente e poupança. Faturas de cartão ficam separadas ao lado.
         </p>
@@ -53,21 +78,30 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <CreditCard className="size-4" aria-hidden="true" />
           <h2 id="hero-debt">Dívidas</h2>
         </div>
+
         <p className="mt-4 text-3xl font-bold tracking-tight text-coral tabular-nums md:text-4xl">
           <CountUp value={debt} />
         </p>
-        <p className="mt-1 text-xs font-medium text-text-muted">Fatura em aberto / valor devido</p>
+
+        <p className="mt-1 text-xs font-medium text-text-muted">
+          Fatura em aberto / valor devido
+        </p>
+
         <ul className="mt-auto space-y-2 pt-6">
-          {credit.map((a) => (
-            <li key={a.id} className="flex items-center justify-between gap-3 text-sm">
+          {credit.map((account) => (
+            <li
+              key={account.id}
+              className="flex items-center justify-between gap-3 text-sm"
+            >
               <span className="truncate text-text-muted">
-                {a.name} ••{a.mask}
+                {account.name} ••{account.mask}
               </span>
+
               <span className="font-semibold tabular-nums">
-                {a.current == null ? (
+                {account.current == null ? (
                   <span className="text-text-muted">Não informado</span>
                 ) : (
-                  <CountUp value={a.current} />
+                  <CountUp value={account.current} />
                 )}
               </span>
             </li>

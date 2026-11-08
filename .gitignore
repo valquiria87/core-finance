@@ -1,6 +1,7 @@
 # Ignorar segredos e artefatos locais
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 node_modules/
@@ -8,3 +9,16 @@ dist/
 build/
 .DS_Store
 Thumbs.db
+# Next.js
+.next/
+out/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Arquivos temporários
+backend/test-output.txt
+.vercel
+.env*
+!.env.example

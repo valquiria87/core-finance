@@ -12,7 +12,7 @@
 - **Tipografia:** Plus Jakarta Sans ou Manrope (Google Fonts), números tabulares (`tabular-nums`) em todos os valores. Títulos fortes, rótulos pequenos em cinza.
 - **Grade:** 8px. **Cantos:** 16 a 24px. **Sombras:** suaves. **Ícones:** Lucide.
 - **Contraste acessível, foco visível, responsivo 360px a 1440px, sem rolagem horizontal.**
-- **Valores sempre em USD**, formato "US$ 1.234,56".
+- **Valores sempre em BRL**, formato "R$ 1.234,56", conforme os dados da Pluggy Sandbox.
 
 ## Cores (tokens sugeridos)
 
@@ -54,7 +54,7 @@ Todos os valores monetários usam `font-variant-numeric: tabular-nums`.
 - Botão de tema (lua/sol).
 
 ### 2. Cartão principal (hero)
-- "Dinheiro em contas" com número grande (US$ X.XXX,XX).
+- "Dinheiro em contas" com número grande (R$ X.XXX,XX).
 - Gradiente sutil no cartão.
 - Mini-gráfico (sparkline) ao lado do valor.
 - Bloco separado "Dívidas" em destaque (coral), com valor devido separado do saldo disponível.

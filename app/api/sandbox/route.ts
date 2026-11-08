@@ -1,11 +1,24 @@
-import { getSandboxSnapshot } from '@/lib/mock-data'
+import { getSavedFinanceSnapshot } from '@/lib/get-finance-snapshot'
 
-/**
- * Etapa 1: devolve dados fictícios no formato da sandbox Plaid.
- * Etapa 2: buscar no backend/ (com PLAID_CLIENT_ID/PLAID_SECRET apenas no servidor)
- * e invalidar o cache quando o webhook de novas transações chegar (ver docs/webhooks.md).
- */
+export const runtime = 'nodejs'
+
 export async function GET() {
-  await new Promise((r) => setTimeout(r, 600))
-  return Response.json(getSandboxSnapshot())
+  try {
+    const snapshot = await getSavedFinanceSnapshot()
+
+    return Response.json(snapshot, {
+      headers: { 'Cache-Control': 'no-store' },
+    })
+  } catch (error) {
+    console.error('Saved finance snapshot failed:', error)
+
+    return Response.json(
+      {
+        error: error instanceof Error
+          ? error.message
+          : 'Falha ao carregar dados financeiros salvos',
+      },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } },
+    )
+  }
 }

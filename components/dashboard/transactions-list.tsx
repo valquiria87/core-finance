@@ -7,7 +7,7 @@ import { CategoryIcon } from '@/components/finance/category-icon'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
 import { groupByDay, isInflow, isOutflow } from '@/lib/finance'
-import { formatDayHeading, formatUSD } from '@/lib/format'
+import { formatBRL, formatDayHeading } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -21,35 +21,58 @@ type Filter = (typeof FILTERS)[number]['id']
 
 export function TransactionsList({ data }: { data: SandboxSnapshot }) {
   const [filter, setFilter] = useState<Filter>('all')
+  const [visibleDays, setVisibleDays] = useState(10)
+
   const accountName = (id: string) => {
-    const a = data.accounts.find((x) => x.id === id)
-    return a ? `${a.name} ••${a.mask}` : 'Conta'
+    const account = data.accounts.find((item) => item.id === id)
+    return account ? `${account.name} ••${account.mask}` : 'Conta'
   }
-  const filtered = data.transactions.filter((t) =>
-    filter === 'all' ? true : filter === 'out' ? isOutflow(t) : isInflow(t),
+
+  const filtered = data.transactions.filter((transaction) =>
+    filter === 'all'
+      ? true
+      : filter === 'out'
+        ? isOutflow(transaction)
+        : isInflow(transaction),
   )
-  const groups = groupByDay(filtered).slice(0, 10)
+
+  const allGroups = groupByDay(filtered)
+  const groups = allGroups.slice(0, visibleDays)
 
   return (
-    <Surface delay={260} id="transacoes" className="scroll-mt-24" aria-labelledby="transacoes-title">
+    <Surface
+      delay={260}
+      id="transacoes"
+      className="scroll-mt-24"
+      aria-labelledby="transacoes-title"
+    >
       <SectionTitle
         id="transacoes-title"
         title="Transações"
-        subtitle="Positivo = saída · negativo = entrada (regra Plaid)"
+        subtitle={`${filtered.length} transações · ${allGroups.length} dias com movimentações · BRL`}
         action={
-          <div role="group" aria-label="Filtrar transações" className="flex rounded-full border bg-surface-elev p-1">
-            {FILTERS.map((f) => (
+          <div
+            role="group"
+            aria-label="Filtrar transações"
+            className="flex rounded-full border bg-surface-elev p-1"
+          >
+            {FILTERS.map((item) => (
               <button
-                key={f.id}
+                key={item.id}
                 type="button"
-                aria-pressed={filter === f.id}
-                onClick={() => setFilter(f.id)}
+                aria-pressed={filter === item.id}
+                onClick={() => {
+                  setFilter(item.id)
+                  setVisibleDays(10)
+                }}
                 className={cn(
                   'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                  filter === f.id ? 'bg-surface text-foreground shadow-sm' : 'text-text-muted hover:text-foreground',
+                  filter === item.id
+                    ? 'bg-surface text-foreground shadow-sm'
+                    : 'text-text-muted hover:text-foreground',
                 )}
               >
-                {f.label}
+                {item.label}
               </button>
             ))}
           </div>
@@ -57,43 +80,82 @@ export function TransactionsList({ data }: { data: SandboxSnapshot }) {
       />
 
       {groups.length === 0 ? (
-        <EmptyState icon={ReceiptText} title="Nada por aqui" description="Nenhuma transação encontrada com esse filtro. Tente outro filtro." />
+        <EmptyState
+          icon={ReceiptText}
+          title="Nada por aqui"
+          description="Nenhuma transação encontrada com esse filtro. Tente outro filtro."
+        />
       ) : (
         <div className="space-y-5">
-          {groups.map((g) => (
-            <section key={g.date} aria-label={formatDayHeading(g.date, data.asOf)}>
+          {groups.map((group) => (
+            <section
+              key={group.date}
+              aria-label={formatDayHeading(group.date, data.asOf)}
+            >
               <h3 className="mb-1 text-xs font-semibold tracking-wide text-text-muted uppercase">
-                {formatDayHeading(g.date, data.asOf)}
+                {formatDayHeading(group.date, data.asOf)}
               </h3>
+
               <ul className="divide-y">
-                {g.items.map((t) => {
-                  const out = t.amount > 0
+                {group.items.map((transaction) => {
+                  const out = isOutflow(transaction)
+
                   return (
-                    <li key={t.id} className="flex items-center gap-3 py-3">
-                      <CategoryIcon id={t.category} />
+                    <li
+                      key={transaction.id}
+                      className="flex items-center gap-3 py-3"
+                    >
+                      <CategoryIcon id={transaction.category} />
+
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <p className="truncate text-sm font-semibold">{t.merchant}</p>
-                          {t.pending && <Badge tone="warning">Pendente</Badge>}
+                          <p className="truncate text-sm font-semibold">
+                            {transaction.merchant}
+                          </p>
+
+                          {transaction.pending && (
+                            <Badge tone="warning">Pendente</Badge>
+                          )}
                         </div>
-                        <p className="truncate text-xs text-text-muted">{accountName(t.accountId)}</p>
+
+                        <p className="truncate text-xs text-text-muted">
+                          {accountName(transaction.accountId)}
+                        </p>
                       </div>
-                      <p
-                        className={cn(
-                          'shrink-0 text-right text-sm font-semibold tabular-nums',
-                          out ? 'text-outflow' : 'text-inflow',
-                        )}
-                      >
-                        <span className="sr-only">{out ? 'Saída de ' : 'Entrada de '}</span>
-                        <span aria-hidden="true">{out ? '− ' : '+ '}</span>
-                        {formatUSD(Math.abs(t.amount))}
-                      </p>
+
+                      <div className="shrink-0 text-right">
+                        <p
+                          className={cn(
+                            'text-sm font-semibold tabular-nums',
+                            out ? 'text-outflow' : 'text-inflow',
+                          )}
+                        >
+                          <span className="sr-only">
+                            {out ? 'Saída de ' : 'Entrada de '}
+                          </span>
+
+                          <span aria-hidden="true">
+                            {out ? '− ' : '+ '}
+                          </span>
+
+                          {formatBRL(Math.abs(transaction.amount))}
+                        </p>
+                      </div>
                     </li>
                   )
                 })}
               </ul>
             </section>
           ))}
+          {groups.length < allGroups.length && (
+            <button
+              type="button"
+              onClick={() => setVisibleDays((current) => current + 10)}
+              className="w-full rounded-xl border px-4 py-2.5 text-sm font-semibold text-text-muted transition-colors hover:bg-surface-elev hover:text-foreground"
+            >
+              Mostrar mais 10 dias ({allGroups.length - groups.length} restantes)
+            </button>
+          )}
         </div>
       )}
     </Surface>

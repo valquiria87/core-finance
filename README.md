@@ -1,292 +1,237 @@
-# chat-financeiro-mcp
+# Core Finance
 
-Assistente financeiro em formato de chat, que leva o banco ate onde o cliente ja esta.
-Responde em portugues sobre contas, saldos e transacoes, com dados chegando por MCP.
+**Open Finance portfolio project | Next.js · TypeScript · Pluggy Sandbox · Supabase**
 
-> Aviso: todos os dados financeiros usados neste projeto sao ficticios (sandbox).
-> Nenhuma chave, token ou senha deve ser versionada ou aparecer em prints.
+![Core Finance chat](evidencias/pluggy-sandbox-chat.png)
 
-## 1. Onde o cliente ja esta
+[![CI](https://github.com/valquiria87/core-finance/actions/workflows/ci.yml/badge.svg)](https://github.com/valquiria87/core-finance/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/Preview-Vercel-black?logo=vercel)](https://core-finance-nine.vercel.app/)
+**Sandbox data only — no real bank accounts.**
 
-- Nome do projeto/assistente: Core Finance (tom empatico).
-- Slogan: O núcleo inteligente para suas conexões de Open Finance.
-- Autora: Valquiria Coelho.
-- Cenario: aplicacao web (Next.js) com chat e dashboard, conectada por MCP de Open Finance.
-  A Pluggy e usada como fonte de documentacao (conceitos de Open Finance BR); os dados
-  financeiros exibidos sao ficticios (mock local no formato da sandbox Plaid — Etapa 1).
-- O assistente responde em portugues sobre contas, saldos e transacoes.
+[Leia em português](README.pt-BR.md)
 
-## 2. De onde vem cada dado
+Core Finance combines a financial dashboard with a Portuguese conversational interface. It organizes account snapshots and transactions, calculates rule-based indicators, and answers questions using the saved financial dataset.
 
-| Dado | Fonte | Tipo | Observacao |
-|---|---|---|---|
-| Conceitos de Open Finance BR (Item, connector, consentimento) | Pluggy (documentacao) | MCP Streamable HTTP (`https://mcp.pluggy.ai/mcp`) | Sem chave; apenas documentacao |
-| Contas, saldos e transacoes ficticias (Etapa 1) | Mock local espelhando o formato da sandbox Plaid | Dados estaticos em `lib/mock-data.ts` (rota `/api/sandbox`) | Sem credenciais; `PLAID_CLIENT_ID`/`PLAID_SECRET` so serao usados na Etapa 2 (backend) |
-| Organizacao da resposta em linguagem simples | Modelo de linguagem do chat | - | Nao "sabe" o saldo; organiza o que a fonte devolve |
+> **Important:** the deployed project uses fictional Pluggy Sandbox data. It is not connected to real customer bank accounts and must not be used for real financial decisions.
 
-> Nota: a aplicacao atual (Etapa 1) NAO chama a API da Plaid nem a da Pluggy em runtime.
-> Os dados sao ficticios e locais. A Etapa 2 (backend com chaves no servidor) esta planejada,
-> nao implementada em producao.
+## DIO challenge map
 
-## 3. Como configurar os servidores MCP
+| Deliverable | Where to find it |
+|---|---|
+| Client/user and assistant experience | The customer-facing chat is embedded in the dashboard and opened from the floating “Falar com o Core” launcher. It answers questions about balances, transactions, spending by category/month, and patterns available in the Sandbox snapshot; see the chat and dashboard captures in [evidencias/](evidencias/). |
+| Builder (v0) prompt/specification | Reconstructed brief below. The original verbatim prompt was not retained in the repository, so this is a faithful scope summary, not a quotation. |
+| MCP: Pluggy documentation | Streamable HTTP endpoint: `https://mcp.pluggy.ai/mcp`; documentation research screenshots in `evidencias/pluggy-docs-mcp-*.png`. |
+| MCP: Plaid Sandbox lab | Local STDIO server using `uvx mcp-server-plaid`; credentials are placeholders in the example below. Plaid screenshots in `evidencias/plaid-sandbox-*.png`. |
+| Selected improvement | **Stage 2: server-side data integration and persistence** — Next.js webhook route, Pluggy Sandbox API adapter, Supabase snapshot storage, event deduplication, retry lease, health view, and failure email. |
+| Evidence of final implementation | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png`, and `pluggy-sandbox-chat.png`. |
 
-O MCP (Model Context Protocol) e a tomada padrao entre a IA e as fontes externas.
+### Builder brief and changes after generation
 
-Adicione um servidor MCP do tipo Streamable HTTP com a URL:
+**Reconstructed v0 brief (summary, not verbatim):** build a responsive Open Finance dashboard with account balances, card information, categorized transactions, spending insights, and a Portuguese chat assistant; use a modern financial-product interface and fictional data for the demonstration.
 
-```
-https://mcp.pluggy.ai/mcp
-```
+**What was refined after the initial UI:** Pluggy Sandbox was selected as the active source because it powers the final server-side integration and the data persisted for the dashboard/chat; Plaid was retained as a separate MCP learning lab. The deployed app moved to Next.js Route Handlers; the server fetches accounts and transactions, adapts them to the internal snapshot, and persists that snapshot in Supabase. The webhook gained validation, deduplication, a five-minute processing lease, failure tracking, and email notification. Currency presentation was aligned to BRL. The Plaid work remains documented as an MCP/Sandbox learning laboratory and is not the deployed runtime data source.
 
-Sem chave. Confira com `/mcp` e peca a IA para explicar o que e um Item,
-citando as fontes retornadas.
+### MCP configuration
 
-Sem prints de configuracao versionados entre as evidencias disponiveis. Use a secao 15 para as evidencias visuais renomeadas.
-
-### 3.2 Servidor Plaid (STDIO)
-
-1. Copie o `Client ID` e o `Secret` de Sandbox em Developers > Keys.
-2. Instale o `uv` (no Windows, `uv`/`uvx` precisam estar no PATH).
-3. Adicione o servidor MCP do tipo STDIO com o caminho absoluto do `uvx` e o comando `mcp-server-plaid`.
-4. Configure as variaveis de ambiente:
-   - `PLAID_CLIENT_ID`
-   - `PLAID_SECRET`
-   - (opcional) `PLAID_ENV=sandbox`
-
-Exemplo de configuracao (ajuste o caminho do `uvx` para o seu computador):
+**Pluggy documentation server — remote Streamable HTTP**
 
 ```json
 {
   "mcpServers": {
-    "plaid": {
-      "command": "CAMINHO_ABSOLUTO_PARA_UVX",
-      "args": ["mcp-server-plaid"],
-      "env": {
-        "PLAID_CLIENT_ID": "seu_client_id_sandbox",
-        "PLAID_SECRET": "seu_secret_sandbox",
-        "PLAID_ENV": "sandbox"
-      }
+    "pluggy-docs": {
+      "url": "https://mcp.pluggy.ai/mcp"
     }
   }
 }
 ```
 
-> **Atenção:** substitua `CAMINHO_ABSOLUTO_PARA_UVX` pelo caminho real do `uvx.exe`
-> no seu computador. Nunca commite este arquivo com credenciais reais.
+**Plaid Sandbox — local STDIO via uvx**
 
-Sem prints de configuracao versionados entre as evidencias disponiveis. Use a secao 15 para as evidencias visuais renomeadas.
-
-### 3.3 Verificacao cruzada
-
-Após configurar ambos os servidores, confirme:
-
-- [ ] Pluggy responde `/mcp` e explica o que e um Item (sem chave).
-- [ ] Plaid lista contas/saldos/transacoes ficticias (com `PLAID_ENV=sandbox`).
-- [ ] A IA consegue diferenciar conta corrente (saldo) de cartao (fatura em aberto / divida).
-- [ ] Nenhuma credencial aparece em prints ou no README.
-
-## 4. Especificacao / prompt enviado ao builder (v0 ou Lovable)
-
-Ver arquivo `docs/prompt-v0.md` (formato OpenSpec, pronto para colar no v0) e `docs/design-system.md` (direcao de arte premium).
-Também disponível: `docs/prompt-lovable.md` (backup para Lovable).
-Ajustes feitos depois:
-- Nome alterado para Core Finance com tagline: "O núcleo inteligente para suas conexões de Open Finance".
-- Tom empatico e cenario Open Finance via Pluggy.
-
-## 5. Melhoria escolhida (planejada, nao implementada em producao)
-
-Etapa 2: backend proprio com as chaves apenas no servidor (em vez de chaves no cliente).
-Inclui recebimento de webhooks (ver `docs/webhooks.md`) e entrega ao cliente
-por push, SMS ou WhatsApp.
-
-O backend em `backend/` ja existe como prototipo (servidor Express com `/insights` e webhook), mas a integracao
-com a API da Plaid em producao ainda nao esta ativa (Etapa 2).
-
-## 6. Endereco do app publicado
-
-- https://core-finance-nine.vercel.app
-
-## 7. Estrutura do repositorio
-
-```
-core-finance/
-  README.md
-  SECURITY.md
-  components.json
-  next.config.mjs
-  package.json
-  pnpm-lock.yaml
-  pnpm-workspace.yaml
-  postcss.config.mjs
-  tsconfig.json
-  .gitignore
-  app/
-    globals.css
-    layout.tsx
-    page.tsx
-    api/
-      core/
-        route.ts
-      sandbox/
-        route.ts
-  backend/
-    .env.example
-    insights.js
-    package.json
-    package-lock.json
-    server.js
-    public/
-      index.html
-  components/
-    chat/
-    dashboard/
-    finance/
-    layout/
-    ui/
-  hooks/
-    use-sandbox.ts
-  lib/
-    categories.ts
-    core-engine.ts
-    finance.ts
-    format.ts
-    mock-data.ts
-    types.ts
-    utils.ts
-  public/
-    (icones e placeholders)
-  data/
-    transactions_labeled.json
-  docs/
-    design-system.md
-    oauth-mcp.md
-    prompt-lovable.md
-    prompt-v0.md
-    tabela-padroes-gasto.md
-    webhooks.md
-  scripts/
-    evaluate_categorization.js
-    generate_dataset.py
-  tests/
-    insights.test.js
-  evidencias/
-    app-core-finance-conversa-gastos-categoria.png
-    plaid-sandbox-contas-saldos.png
-    plaid-sandbox-contas-transacoes-categorias.png
-    plaid-sandbox-transacoes-convencao-sinais.png
-    pluggy-docs-mcp-conceito-pluggy-item.png
-    pluggy-docs-mcp-conceitos-connector-item-product.png
-    pluggy-docs-mcp-endpoints-investments-recurring-payments.png
-    pluggy-docs-mcp-endpoints-transactions.png
-    pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png
-    pluggy-docs-mcp-referencia-transaction-autenticacao.png
-    pluggy-endpoint-transactions-legado-migracao-v2.png
-    pluggy-endpoint-transactions-legado-parametros.png
-    pluggy-endpoint-transactions-v2-get.png
-    pluggy-endpoint-transactions-v2-parametros.png
-    pluggy-endpoint-transactions-v2-resposta-200-legado.png
+```json
+{
+  "mcpServers": {
+    "plaid": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-plaid",
+        "--client-id",
+        "YOUR_PLAID_CLIENT_ID",
+        "--secret",
+        "YOUR_PLAID_SECRET"
+      ]
+    }
+  }
+}
 ```
 
-## 8. Funcionalidades implementadas vs. documentadas vs. planejadas
+Use Plaid **Sandbox** credentials only for this laboratory. Do not paste credentials into README, screenshots, source control, or chat. The Plaid screenshots are historical lab evidence: they show the Sandbox exploration (including the captured 14 accounts and 48 transactions), not the current Pluggy-backed application.
 
-### Implementadas (no codigo)
-- Chat web + dashboard (contas, saldos, fluxo, gastos por categoria, lista de transacoes).
-- Dados ficticios locais no formato Plaid sandbox (`lib/mock-data.ts`, rota `/api/sandbox`).
-- Categorizacao por regras de palavras-chave (`lib/categories.ts`).
-- Insights: assinaturas recorrentes, outliers por categoria, previsao de fechamento.
-- Backend Express prototipo com `/insights` e webhook (`backend/server.js`, `backend/insights.js`).
-- Validacao de entrada com zod no webhook.
+## Product behavior
 
-### Documentadas (docs/)
-- Especificacao OpenSpec para v0/Lovable (`docs/prompt-v0.md`, `docs/prompt-lovable.md`).
-- Design system (`docs/design-system.md`).
-- Tabela de padroes de gasto (`docs/tabela-padroes-gasto.md`).
-- Webhooks (`docs/webhooks.md`).
-- OAuth MCP (`docs/oauth-mcp.md`).
+- Account and balance overview; card bill and credit limit are shown separately.
+- Transaction list, categories, and filters.
+- Spending summaries by category and period.
+- Portuguese chat for questions about balances, transactions, and spending.
+- BRL currency formatting.
+- Pluggy webhook refreshes the configured Sandbox Item and persists the resulting snapshot.
 
-### Planejadas (nao implementadas)
-- Integracao real com a API da Plaid em producao (Etapa 2).
-- Validacao de assinatura de webhook em producao.
-- Persistencia em banco + fila (hoje em memoria).
-- Testes de contrato para tools MCP com mocks.
-- Classificador supervisionado por categoria.
+**Assistant implementation:** the current chat is a **deterministic, rule- and keyword-based assistant** in `lib/core-engine.ts`. It does not call an LLM and does not execute its own MCP tools. A dedicated MCP server, LLM with tool calling, and systematic question/answer evaluation remain roadmap items. The project is not represented as a production AI agent.
 
-## 9. Acuracia de categorizacao (avaliacao)
+## Engineering highlights
 
-- Dataset: `data/transactions_labeled.json` (150 transacoes rotuladas).
-- Baseline por regras de palavras-chave (merchant/descricao).
-- Resultado: 142/150 acertos = **94.67%**.
-- Script: `scripts/evaluate_categorization.js`.
-- Proximo passo: comparar com classificador supervisionado e medir por categoria.
+- **Persisted snapshot:** Pluggy API responses are normalized by `lib/pluggy-adapter.ts` and saved to Supabase `finance_snapshots`; dashboard routes read the saved snapshot.
+- **Webhook idempotency:** `webhook_events.event_id` prevents duplicate event registration.
+- **Processing lease and compare-and-set:** a five-minute lease allows recovery of stale/failed events while conditional updates prevent an older worker from overwriting a newer claim.
+- **Provider contract tests:** mocked Pluggy auth, accounts, transaction pagination, and adapter behavior.
+- **Webhook tests:** validation, authentication, duplicates, lease recovery, synchronization, and failure paths.
+- **Failure notification:** `lib/webhook-alert-email.ts` sends an email when webhook synchronization fails, when Gmail SMTP is configured.
 
-## 10. Insights automaticos
+## Architecture
 
-Endpoint `/insights` (backend) retorna:
-- assinaturas recorrentes (merchant com >=3 ocorrencias e baixa variancia);
-- gastos fora do padrao (outliers > 2 desvios por categoria);
-- previsao de fechamento do mes (media diaria * dias restantes).
-
-## 11. Diagrama (Mermaid)
+The deployed Next.js application uses server-side Route Handlers. The dashboard and chat read the latest synchronized snapshot from Supabase; they do not independently fetch Pluggy data on every page request.
 
 ```mermaid
-flowchart LR
-  U[Usuario] --> C[Chat Web]
-  C --> S[/api/sandbox]
-  C --> R[/api/core]
-  S --> M[lib/mock-data.ts]
-  R --> E[lib/core-engine.ts]
-  C -. pesquisa .-> P[Pluggy MCP HTTP (docs)]
-  C -. experimentacao externa .-> A[Plaid Sandbox (dados)]
-  C --> B[Backend Webhook/Insights]
-  B --> W[Webhook Events]
-  B --> I[Insights]
+flowchart TD
+    A["Pluggy Sandbox"] -->|Webhook notification| B["POST /api/webhooks/pluggy"]
+    B --> C["Validate secret, clientId and payload"]
+    C --> D["Register and claim event in Supabase"]
+    D --> E["Fetch accounts and transactions from Pluggy API"]
+    E --> F["Pluggy adapter"]
+    F --> G["SandboxSnapshot"]
+    G --> H["Supabase finance_snapshots"]
+    H --> I["/api/sandbox, /api/core, /api/insights"]
+    I --> J["Dashboard and deterministic chat"]
 ```
 
-## 12. Decisoes tecnicas (ADRs curtos)
+### API routes
 
-- ADR-01: Etapa 1 usa dados ficticios locais e regras locais, sem chaves no frontend; Etapa 2 move integracao real com APIs externas e segredos para backend.
-- ADR-02: Pluggy como fonte de documentacao (sem dados reais); Plaid como sandbox de dados.
-- ADR-03: Valor positivo = saida (Plaid); cartao rotulado como divida.
-- ADR-04: Backend em Node/Express com zod, logs estruturados e retries.
-- ADR-05: Webhooks com idempotencia e processamento assincrono.
+| Route | Purpose |
+|---|---|
+| `GET /api/sandbox` | Returns the latest saved financial snapshot. |
+| `POST /api/core` | Answers a financial question using the saved snapshot and deterministic rules. |
+| `GET /api/insights` | Calculates the currently implemented indicators. |
+| `POST /api/webhooks/pluggy` | Validates a Pluggy notification, refreshes data, and persists the snapshot. |
 
-## 13. O que faria diferente
+The Express application in `backend/` is a separate prototype, not the backend serving the deployed Next.js application.
 
-- Comecar com backend (Etapa 2) desde o inicio para evitar migracao de segredos.
-- Usar OAuth no MCP em vez de token na URL.
-- Persistir eventos em banco (nao em memoria) e usar fila.
-- Adicionar testes de contrato para as tools MCP com mocks.
-- Medir acuracia por categoria e usar modelo supervisionado.
+## Data and persistence
 
-## 14. Seguranca
+- **Active provider:** Pluggy Sandbox API.
+- **Learning laboratory:** Plaid Sandbox MCP and historical screenshots.
+- **Persistence:** Supabase Postgres.
+- **Snapshot:** `finance_snapshots`, keyed by Pluggy Item ID.
+- **Event tracking:** `webhook_events`, including event ID, type, status, attempts, and processing timestamps.
+- **Webhook health:** restricted aggregate view `webhook_event_health`.
+- **Credentials:** Pluggy, Supabase, and Gmail credentials are server-side environment variables.
 
-- Nenhuma chave, token ou senha versionada.
-- Nenhuma chave aparece em print.
-- Dados ficticios (sandbox) claramente sinalizados no app.
-- Detalhes em `SECURITY.md`.
+The last validated Pluggy Sandbox snapshot contained 2 accounts and 41 transactions. Counts and values may change when the Sandbox data is refreshed. The data is fictional. The snapshot does not provide historical bank balances.
 
-## 15. Evidencias visuais
+## Current limitations and interpretation
 
-### Aplicativo publicado
-- ![Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".](evidencias/app-core-finance-conversa-gastos-categoria.png) — Aplicativo Core Finance publicado, conversa do assistente sobre gastos por categoria com selo "Dados ficticios".
+- No production connection to real financial institutions or real customer data.
+- The assistant is deterministic; no LLM or application-owned MCP server is integrated.
+- Merchant matching in chat uses a small fixed keyword list (for example, delivery, Uber, Netflix, Starbucks, Amazon); it is not a general merchant entity-resolution feature.
+- Recurring-expense detection groups transactions by merchant and checks occurrence count and amount dispersion. It does **not** validate a billing interval or prove that a payment is a subscription.
+- The month-end projection uses the current date and a simple month-to-date daily average. It is not a historical backtest or a forecast calibrated to seasonality; interpret it as an indicative heuristic only.
+- Anomaly detection is a simple statistical rule over the available sample, not a trained model.
+- Webhook processing is synchronous; there is no durable background queue.
+- The webhook uses a shared custom header secret and timing-safe comparison, **not HMAC signing of the request body**. A replay-protection mechanism is not implemented.
+- Public API routes and rate limiting require a further security review before any real-data use.
+- Sandbox history is not a complete bank statement or historical balance feed.
 
-### Conceitos e endpoints da Pluggy (consulta via MCP Docs)
-> A Pluggy foi consultada via MCP Docs. Isso nao comprova integracao bancaria funcional: a aplicacao atual (Etapa 1) nao chama a API da Pluggy em runtime.
-- ![O que e a Pluggy e o conceito de Item.](evidencias/pluggy-docs-mcp-conceito-pluggy-item.png) — O que e a Pluggy e o conceito de Item.
-- ![Conceitos Connector, Item e Product.](evidencias/pluggy-docs-mcp-conceitos-connector-item-product.png) — Conceitos Connector, Item e Product.
-- ![Endpoints relacionados a Transactions.](evidencias/pluggy-docs-mcp-endpoints-transactions.png) — Endpoints relacionados a Transactions.
-- ![Endpoints legado, retrieve e atualizacao de categoria.](evidencias/pluggy-docs-mcp-endpoints-transactions-legado-retrieve-categoria.png) — Endpoints legado, retrieve e atualizacao de categoria.
-- ![Endpoints de investimentos e recurring-payments.](evidencias/pluggy-docs-mcp-endpoints-investments-recurring-payments.png) — Endpoints de investimentos e recurring-payments.
-- ![Referencia Transaction e autenticacao com token proprio.](evidencias/pluggy-docs-mcp-referencia-transaction-autenticacao.png) — Referencia Transaction e autenticacao com token proprio.
-- ![Endpoint recomendado GET /v2/transactions.](evidencias/pluggy-endpoint-transactions-v2-get.png) — Endpoint recomendado GET /v2/transactions.
-- ![Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).](evidencias/pluggy-endpoint-transactions-v2-parametros.png) — Parametros do endpoint v2 (accountId, ids, dateFrom, dateTo, createdAtFrom, after).
-- ![Estrutura da resposta 200 (results, next) e inicio do endpoint legado.](evidencias/pluggy-endpoint-transactions-v2-resposta-200-legado.png) — Estrutura da resposta 200 (results, next) e inicio do endpoint legado.
-- ![Parametros do endpoint legado.](evidencias/pluggy-endpoint-transactions-legado-parametros.png) — Parametros do endpoint legado.
-- ![Final dos parametros legados e recomendacao de migracao para v2.](evidencias/pluggy-endpoint-transactions-legado-migracao-v2.png) — Final dos parametros legados e recomendacao de migracao para v2.
+## Technology stack
 
-### Consultas do Plaid Sandbox
-> Os dados exibidos no aplicativo e os dados retornados pelo Plaid Sandbox sao demonstracoes distintas; nao sao o mesmo conjunto de dados.
-- ![Tabela de contas e saldos (parte das 14 contas).](evidencias/plaid-sandbox-contas-saldos.png) — Tabela de contas e saldos (parte das 14 contas).
-- ![Contas restantes e resumo de 48 transacoes por categoria.](evidencias/plaid-sandbox-contas-transacoes-categorias.png) — Contas restantes e resumo de 48 transacoes por categoria.
-- ![Continuacao do resumo de transacoes e convencao de sinais.](evidencias/plaid-sandbox-transacoes-convencao-sinais.png) — Continuacao do resumo de transacoes e convencao de sinais.
+| Area | Technology |
+|---|---|
+| Frontend | Next.js 16, React 19, TypeScript |
+| Styling and icons | Tailwind CSS, Lucide |
+| Server API | Next.js Route Handlers |
+| Validation | Zod |
+| Client fetching | SWR |
+| Financial provider | Pluggy Sandbox API |
+| Persistence | Supabase Postgres |
+| Email alert | Nodemailer with Gmail SMTP |
+| Documentation research | Pluggy MCP |
+| Package manager | pnpm workspace |
+| Deployment | Vercel |
 
+## Environment variables
+
+Copy `.env.example` to a local environment file and set values on the server. Never commit real credentials.
+
+| Variable | Purpose |
+|---|---|
+| `PLUGGY_CLIENT_ID`, `PLUGGY_CLIENT_SECRET` | Pluggy API authentication |
+| `PLUGGY_ITEM_ID` | Configured Sandbox Item |
+| `PLUGGY_WEBHOOK_SECRET` | Shared secret expected in the webhook header |
+| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Server-side Supabase access |
+| `GMAIL_USER` | Gmail account used for SMTP |
+| `GMAIL_APP_PASSWORD` | Google App Password (not the normal account password) |
+| `ALERT_EMAIL_TO` | Recipient of webhook failure alerts |
+
+Email alerts are sent only when webhook synchronization fails and all three Gmail variables are configured. Missing email configuration does not turn a successful deployment into proof that SMTP works.
+
+## Run locally
+
+Requirements: Node.js and pnpm.
+
+```bash
+pnpm install
+cp .env.example .env.local
+pnpm dev
+```
+
+Open `http://localhost:3000`.
+
+### Validation
+
+```bash
+pnpm test
+pnpm exec tsc --noEmit
+pnpm build
+```
+
+## Evidence
+
+### Final Pluggy Sandbox application
+
+![Core Finance dashboard](evidencias/pluggy-sandbox-dashboard.png)
+![Accounts and balances](evidencias/pluggy-sandbox-contas-saldos.png)
+![Transactions](evidencias/pluggy-sandbox-transacoes.png)
+![Portuguese chat](evidencias/pluggy-sandbox-chat.png)
+
+### Plaid Sandbox laboratory
+
+![Plaid Sandbox accounts and balances](evidencias/plaid-sandbox-contas-saldos.png)
+![Plaid Sandbox accounts, transactions and categories](evidencias/plaid-sandbox-contas-transacoes-categorias.png)
+![Plaid Sandbox transaction sign convention](evidencias/plaid-sandbox-transacoes-convencao-sinais.png)
+
+### MCP documentation research
+
+![Pluggy MCP concepts](evidencias/pluggy-docs-mcp-conceito-pluggy-item.png)
+![Pluggy transaction endpoint documentation](evidencias/pluggy-docs-mcp-endpoints-transactions.png)
+
+All financial records in the screenshots are test or Sandbox data.
+
+## Roadmap
+
+- [x] Server-side Pluggy Sandbox integration and Supabase snapshot persistence.
+- [x] Webhook event deduplication, processing lease, health view, and failure email.
+- [x] Pluggy contract tests and webhook tests.
+- [ ] Add a project-owned MCP server exposing safe, read-only financial tools.
+- [ ] Integrate an LLM with explicit tool calling and server-side authorization.
+- [ ] Build a question/answer evaluation set (correctness, groundedness, refusal, and regression tests).
+- [ ] Add replay protection, durable asynchronous processing, rate limiting, and expanded access-control review.
+- [ ] Record a 60–90 second walkthrough for the DIO submission and recruiter portfolio.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for implemented controls, known gaps, and vulnerability reporting.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+## Author
+
+**Valquiria Coelho**
