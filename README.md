@@ -23,7 +23,7 @@ Core Finance combines a financial dashboard with a Portuguese conversational int
 | MCP: Pluggy documentation | Streamable HTTP endpoint: `https://mcp.pluggy.ai/mcp`; documentation research screenshots in `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP: Plaid Sandbox lab | Local STDIO server using `uvx` + `mcp-server-plaid`, with `PLAID_CLIENT_ID` and `PLAID_SECRET` supplied as local environment variables. The available screenshots show returned data; P05/P06/P07 evidence gaps are recorded in [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). |
 | Selected improvement | **Stage 2: server-side data integration and persistence** — Pluggy webhook (covering the webhook topic on page 18 of the guide), Pluggy Sandbox API adapter, Supabase snapshot storage, event deduplication, retry lease, health view, and failure email. |
-| MCP evidence audit | P01–P07 evidence, missing proof, and the difference between the instructor guide's Plaid run and the project screenshots are detailed in [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). |\n| Evidence of final implementation | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png`, and `pluggy-sandbox-chat.png`. |
+| MCP evidence audit | P01–P07 evidence, missing proof, and the difference between the instructor guide's Plaid run and the project screenshots are detailed in [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). \n| Evidence of final implementation | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png`, and `pluggy-sandbox-chat.png`. |
 
 ### Builder brief and changes after generation
 
