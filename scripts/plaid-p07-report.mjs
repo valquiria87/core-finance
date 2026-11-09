@@ -1,4 +1,12 @@
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+
+const localEnv = await readFile('.env.plaid.local', 'utf8').catch(() => '');
+for (const line of localEnv.split(/\r?\n/)) {
+  const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+  if (match && process.env[match[1]] === undefined) {
+    process.env[match[1]] = match[2].replace(/^['\"]|['\"]$/g, '');
+  }
+}
 
 const baseUrl = 'https://sandbox.plaid.com';
 const clientId = process.env.PLAID_CLIENT_ID;
