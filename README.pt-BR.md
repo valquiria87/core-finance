@@ -19,10 +19,11 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 | Entregável | Onde está |
 |---|---|
 | Cliente/usuário e experiência do assistente | O chat voltado ao usuário fica integrado ao dashboard e é aberto pelo botão flutuante “Falar com o Core”. Responde sobre saldos, transações, gastos por categoria/período e padrões disponíveis no snapshot Sandbox; veja as capturas do chat e do dashboard em [evidencias/](evidencias/). |
-| Prompt/especificação do builder (v0) | Brief reconstruído abaixo. O prompt original literal não foi preservado no repositório; portanto, este é um resumo fiel do escopo, não uma citação. |
+| Prompt/especificação do builder (v0) | As especificações salvas estão em [`docs/prompt-v0.md`](docs/prompt-v0.md) e [`docs/prompt-lovable.md`](docs/prompt-lovable.md). São briefs/especificações do projeto, não logs brutos de execução. |
 | MCP Pluggy | Servidor remoto Streamable HTTP: `https://mcp.pluggy.ai/mcp`; pesquisa documentada em `evidencias/pluggy-docs-mcp-*.png`. |
-| MCP Plaid Sandbox | Servidor local STDIO via `uvx mcp-server-plaid`; configuração ilustrativa com placeholders abaixo. Capturas em `evidencias/plaid-sandbox-*.png`. |
-| Melhoria escolhida | **Etapa 2: integração e persistência no servidor** — rota webhook Next.js, adaptador da API Pluggy Sandbox, snapshot no Supabase, deduplicação, lease de retentativa, visão de saúde e alerta por e-mail. |
+| MCP Plaid Sandbox | Servidor local STDIO via `uvx` + `mcp-server-plaid`, com `PLAID_CLIENT_ID` e `PLAID_SECRET` fornecidos como variáveis de ambiente locais. As capturas mostram resultados retornados; as lacunas de comprovação de P05/P06/P07 estão registradas em [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md). |
+| Melhoria escolhida | **Etapa 2: integração e persistência no servidor** — webhook Pluggy (atende ao tópico de webhooks da p. 18 do guia), adaptador da API Pluggy Sandbox, snapshot no Supabase, deduplicação, lease de retentativa, visão de saúde e alerta por e-mail. |
+| Auditoria das evidências MCP | A situação de P01–P07, as provas ausentes e a diferença entre o ensaio Plaid do guia do instrutor e as capturas do projeto estão em [`docs/auditoria-evidencias-mcp.md`](docs/auditoria-evidencias-mcp.md).
 | Evidências da aplicação final | `evidencias/pluggy-sandbox-dashboard.png`, `pluggy-sandbox-contas-saldos.png`, `pluggy-sandbox-transacoes.png` e `pluggy-sandbox-chat.png`. |
 
 ### Brief do builder e ajustes posteriores
@@ -33,38 +34,18 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 
 ### Configuração dos servidores MCP
 
-**Pluggy — documentação remota, Streamable HTTP**
+Os dois MCPs têm funções diferentes e são configurados no cliente MCP local. A tela ou o arquivo de configuração varia conforme o cliente; transporte, comando e variáveis são:
 
-```json
-{
-  "mcpServers": {
-    "pluggy-docs": {
-      "url": "https://mcp.pluggy.ai/mcp"
-    }
-  }
-}
-```
+| Servidor | Transporte | Configuração |
+|---|---|---|
+| Pluggy Docs MCP | Streamable HTTP | URL: `https://mcp.pluggy.ai/mcp`; não exige chave de API para consulta da documentação. |
+| Plaid Sandbox MCP | STDIO local | Comando: executável local `uvx` (nesta configuração Windows, caminho completo para `uvx.exe`); argumentos: `mcp-server-plaid`; ambiente: `PLAID_CLIENT_ID` e `PLAID_SECRET`. |
 
-**Plaid Sandbox — STDIO local via uvx**
+Para a Plaid, coloque os valores das duas credenciais nas **variáveis de ambiente** do cliente MCP, não nos argumentos do comando. Use somente credenciais Sandbox. Mantenha a configuração com credenciais no computador e fora do Git. Depois de reiniciar o cliente, use `/mcp` em uma conversa nova para confirmar que os servidores e ferramentas carregaram.
 
-```json
-{
-  "mcpServers": {
-    "plaid": {
-      "command": "uvx",
-      "args": [
-        "mcp-server-plaid",
-        "--client-id",
-        "YOUR_PLAID_CLIENT_ID",
-        "--secret",
-        "YOUR_PLAID_SECRET"
-      ]
-    }
-  }
-}
-```
+O Pluggy MCP consulta a documentação do provedor brasileiro; não lê registros bancários. O Plaid MCP prepara um Item e um token fictícios de Sandbox. As consultas de contas e transações são feitas depois na API Plaid Sandbox, não pelo Pluggy Docs MCP.
 
-Use somente credenciais **Plaid Sandbox** neste laboratório. Nunca inclua credenciais no README, em capturas de tela, no controle de versão ou no chat. As imagens Plaid são evidências históricas da exploração Sandbox: registram 14 contas e 48 transações nas capturas, não representam o runtime atual integrado à Pluggy.
+As capturas Plaid do projeto mostram 14 contas e 48 transações entre 07/08/2026 e 26/10/2026. O guia do instrutor registra outro ensaio, com 14 contas e 48 transações entre 28/06/2026 e 25/09/2026. São execuções diferentes; consulte a [auditoria das evidências P01–P07](docs/auditoria-evidencias-mcp.md).
 
 ## Funcionalidades
 
@@ -75,7 +56,7 @@ Use somente credenciais **Plaid Sandbox** neste laboratório. Nunca inclua crede
 - Formatação monetária em reais (BRL).
 - Webhook Pluggy atualiza o Item Sandbox configurado e persiste o snapshot resultante.
 
-**Implementação do assistente:** o chat atual é **determinístico, baseado em regras e palavras-chave**, implementado em `lib/core-engine.ts`. Não chama um LLM nem executa ferramentas MCP próprias. Um servidor MCP dedicado, LLM com chamadas de ferramentas e avaliação sistemática de perguntas/respostas permanecem no roadmap. O projeto não é apresentado como um agente de IA em produção.
+**Implementação do assistente:** o chat atual é **determinístico, baseado em regras e palavras-chave**, implementado em `lib/core-engine.ts`. Não chama um LLM nem executa ferramentas MCP próprias. Suas três visões de gastos (categoria, semana e conta) são calculadas sobre o snapshot Pluggy salvo; não são as três observações Plaid da prática P07. Um servidor MCP dedicado, LLM com chamadas de ferramentas e avaliação sistemática de perguntas/respostas permanecem no roadmap. O projeto não é apresentado como um agente de IA em produção.
 
 ## Destaques de engenharia
 
@@ -112,7 +93,7 @@ flowchart TD
 | `GET /api/insights` | Calcula os indicadores atualmente implementados. |
 | `POST /api/webhooks/pluggy` | Valida notificação Pluggy, atualiza dados e persiste o snapshot. |
 
-A aplicação Express em `backend/` é um protótipo separado, não o backend que atende à aplicação Next.js implantada.
+A aplicação Express sob backend/ é um protótipo separado, não o backend que atende à aplicação Next.js implantada. Ela preserva um exemplo de verificação de assinatura ES256 de webhooks Plaid para o laboratório; o runtime Next.js implantado não expõe uma rota Plaid.
 
 ## Dados e persistência
 
@@ -132,16 +113,16 @@ O último snapshot Pluggy Sandbox validado continha 2 contas e 41 transações. 
 - O assistente é determinístico; não há LLM nem servidor MCP próprio integrado.
 - A identificação de estabelecimentos no chat usa uma pequena lista fixa de palavras-chave (por exemplo, delivery, Uber, Netflix, Starbucks e Amazon); não é resolução geral de entidades.
 - A detecção de despesas recorrentes agrupa transações pelo nome do estabelecimento e verifica quantidade de ocorrências e dispersão dos valores. **Não valida o intervalo entre cobranças nem comprova que o pagamento é uma assinatura.**
-- A projeção de fim de mês usa a data atual e uma média diária simples do mês até o momento. Não é backtest histórico nem previsão ajustada à sazonalidade; deve ser interpretada apenas como heurística indicativa.
+- A projeção de fim de mês usa a data da transação mais recente (ou a data do snapshot quando não há transações) e uma média diária simples para esse mês de referência. Não é backtest histórico nem previsão ajustada à sazonalidade; deve ser interpretada apenas como heurística indicativa.
 - A detecção de anomalias é uma regra estatística simples sobre a amostra disponível, não um modelo treinado.
 - O webhook é síncrono; não existe fila durável em segundo plano.
 - O webhook utiliza segredo compartilhado em cabeçalho e comparação em tempo constante, **não assinatura HMAC do corpo**. Proteção específica contra replay ainda não foi implementada.
-- Rotas públicas e ausência de rate limit exigem revisão de segurança antes de qualquer uso com dados reais.
+- As rotas públicas têm limites por IP em nível de aplicação (20 requisições/minuto para o chat; 60/minuto para snapshot e indicadores), persistidos no Supabase. Os IPs são pseudonimizados com HMAC-SHA256 usando o segredo independente `API_RATE_LIMIT_HMAC_SECRET`; o IP original nunca é armazenado na chave do limitador. O limitador bloqueia a requisição se o segredo ou o armazenamento Supabase estiver indisponível. Uma rotina diária pg_cron e uma limpeza oportunista removem contadores antigos. Isso não substitui WAF nem uma revisão completa antes de qualquer uso com dados reais.
 - O histórico Sandbox não equivale a um extrato completo nem a uma série histórica de saldos.
 
 ## Variáveis de ambiente
 
-Copie `.env.example` para um arquivo local e configure os valores no servidor. Nunca versione credenciais reais.
+Copie `.env.example` para um arquivo local e configure os valores no servidor. Gere `API_RATE_LIMIT_HMAC_SECRET` com `openssl rand -base64 32` e configure-o separadamente nos ambientes Preview e Production da Vercel. Não reutilize `SUPABASE_SECRET_KEY` para essa finalidade nem versione credenciais reais.
 
 | Variável | Finalidade |
 |---|---|
@@ -149,6 +130,7 @@ Copie `.env.example` para um arquivo local e configure os valores no servidor. N
 | `PLUGGY_ITEM_ID` | Item Sandbox configurado |
 | `PLUGGY_WEBHOOK_SECRET` | Segredo esperado no cabeçalho do webhook |
 | `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Acesso server-side ao Supabase |
+| `API_RATE_LIMIT_HMAC_SECRET` | Segredo aleatório independente (mínimo de 32 bytes) para pseudonimização HMAC dos IPs; configure separadamente na Vercel Preview e Production |
 | `GMAIL_USER` | Conta Gmail usada no SMTP |
 | `GMAIL_APP_PASSWORD` | Senha de app do Google, não a senha normal da conta |
 | `ALERT_EMAIL_TO` | Destinatário dos alertas de falha do webhook |
@@ -195,7 +177,7 @@ pnpm build
 ![Conceitos Pluggy MCP](evidencias/pluggy-docs-mcp-conceito-pluggy-item.png)
 ![Documentação do endpoint de transações Pluggy](evidencias/pluggy-docs-mcp-endpoints-transactions.png)
 
-Todos os registros financeiros nas capturas são dados de teste ou Sandbox.
+Todos os registros financeiros nas capturas são dados de teste ou Sandbox. A captura antiga `evidencias/app-core-finance-conversa-gastos-categoria.png` mostra uma versão anterior em dólares e com dados mock; não é evidência da aplicação Pluggy/BRL atual.
 
 ## Roadmap
 
@@ -205,8 +187,8 @@ Todos os registros financeiros nas capturas são dados de teste ou Sandbox.
 - [ ] Criar servidor MCP próprio com ferramentas financeiras seguras e somente leitura.
 - [ ] Integrar LLM com chamadas explícitas de ferramentas e autorização no servidor.
 - [ ] Criar conjunto de avaliação de perguntas/respostas (correção, fundamentação, recusas e regressões).
-- [ ] Implementar proteção contra replay, processamento assíncrono durável, rate limiting e revisão ampliada de controle de acesso.
-- [ ] Gravar demonstração de 60–90 segundos para a entrega DIO e o portfólio de recrutadores.
+- [ ] Implementar proteção contra replay, processamento assíncrono durável, proteção em nível WAF e revisão ampliada de controle de acesso.
+
 
 ## Segurança
 

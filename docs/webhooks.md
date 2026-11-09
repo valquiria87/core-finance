@@ -64,6 +64,26 @@ The custom header configured in the Pluggy webhook registration must be named `x
 
 Never commit real values or expose them through `NEXT_PUBLIC_*` variables.
 
+## Registering the Pluggy webhook
+
+Use scripts/register-pluggy-webhook.mjs to create the webhook if it does not exist or update the existing matching webhook. The script registers the all event for the production endpoint only.
+
+Required environment variables:
+
+- PLUGGY_CLIENT_ID
+- PLUGGY_CLIENT_SECRET
+- PLUGGY_WEBHOOK_SECRET
+- PLUGGY_WEBHOOK_URL — must be exactly https://core-finance-nine.vercel.app/api/webhooks/pluggy; Preview URLs are rejected.
+
+Optional:
+
+- VERCEL_AUTOMATION_BYPASS_SECRET — when set, the script adds x-vercel-protection-bypass to the custom headers sent to Pluggy. When absent, that header is omitted.
+
+Copy .env.example to .env.local, set the values locally, then run from the repository root:
+
+    node --env-file=.env.local scripts/register-pluggy-webhook.mjs
+
+The script authenticates with Pluggy, searches for a matching URL and event: all, then uses PATCH to update it or POST to create it. Never commit .env.local or share its values. The bypass secret is optional and should only be configured when the production deployment's protection requires it.
 ## Automated coverage
 
 Run:
@@ -78,17 +98,34 @@ The tests use mocked Supabase and Pluggy dependencies. They do not constitute a 
 
 ## Remaining hardening
 
-- Confirm whether the provider supports a signed raw-body webhook mechanism; implement it only against documented Pluggy behavior.
-- Review replay protection and the trust model for event IDs.
+- Exact re-deliveries with the same `eventId` are deduplicated persistently. This is the replay protection supported by the current Pluggy event contract; it does not authenticate the body contents. The provider documentation does not currently describe a signed timestamp/nonce or HMAC mechanism. Revisit this only if Pluggy documents a stronger signing scheme.
 - Consider a durable queue and lease renewal for processing that may exceed five minutes.
 - Add monitoring for events that remain in `processing` or repeatedly enter `failed`.
 - Keep provider credentials and database administrative keys server-side.
 - Do not send notifications by SMS, WhatsApp, or push: those delivery channels are not implemented in this repository.
 
 
+## Database access controls
+
+The migration `supabase/migrations/20261108053306_revoke_public_execute_rls_auto_enable.sql` revokes `EXECUTE` on the internal `public.rls_auto_enable()` `SECURITY DEFINER` event-trigger function from `PUBLIC`, `anon`, and `authenticated`. The `ensure_rls` event trigger remains enabled. The database check confirmed that the function remains executable by its owner only and that the trigger is still active.
+
+`finance_snapshots` and `webhook_events` have RLS enabled, no client policies, and service-role-only table grants. The `webhook_event_health` view uses `security_invoker=true` and has a service-role-only SELECT grant. These no-policy RLS findings are intentional deny-by-default controls for the current server-only data path.
+
+## Public API rate limiting
+
+The public demo endpoints use a centralized fixed-window limiter backed by Supabase. The database migration `supabase/migrations/20261108053441_create_api_rate_limits.sql` creates `public.api_rate_limits` and the atomic `public.consume_api_rate_limit()` function. RLS is enabled, client roles have no table access or function execution, and only `service_role` can consume a bucket.
+
+- `POST /api/core`: 20 requests per client IP per 60 seconds.
+- `GET /api/sandbox`: 60 requests per client IP per 60 seconds.
+- `GET /api/insights`: 60 requests per client IP per 60 seconds.
+
+The application reads Vercel's `x-real-ip` request header and stores only an HMAC-SHA256 digest of the address, keyed with the server-side Supabase secret. Raw IP addresses are not persisted in the rate-limit table. Excess requests receive HTTP 429 and a `Retry-After` header. If the limiter database call fails, the endpoints fail closed with HTTP 503 rather than silently disabling the limit.
+
+This is application-level rate limiting, not a substitute for Vercel Firewall/WAF rules or abuse monitoring. The limits are starting values for the fictional-data portfolio demo and should be tuned from traffic observations.
+
 ## Operational health view in Supabase
 
-The migration `supabase/migrations/20261108153000_create_webhook_health_view.sql` creates `public.webhook_event_health`, a one-row aggregate view for operational checks.
+The migration `supabase/migrations/20261108035607_create_webhook_health_view.sql` creates `public.webhook_event_health`, a one-row aggregate view for operational checks.
 
 Open the Supabase project, go to **Table Editor**, and select `webhook_event_health`. The view reports:
 

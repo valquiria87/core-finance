@@ -23,7 +23,7 @@ export function Sidebar({ active, onSelect, collapsed, onToggle }: NavProps & { 
     <nav
       aria-label="Navegação principal"
       className={cn(
-        'sticky top-9 hidden h-[calc(100dvh-2.25rem)] shrink-0 flex-col border-r bg-surface/60 p-3 transition-[width] duration-300 md:flex',
+        'sticky top-9 hidden h-[calc(100dvh-2.25rem)] shrink-0 flex-col border-r bg-surface/60 p-3 transition-[width] duration-300 lg:flex',
         collapsed ? 'w-[76px]' : 'w-60',
       )}
     >
@@ -80,7 +80,7 @@ export function BottomNav({ active, onSelect }: NavProps) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-30 border-t bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
     >
       <ul className="grid grid-cols-4">
         {ITEMS.map((item) => {

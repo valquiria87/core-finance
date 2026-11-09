@@ -59,3 +59,48 @@ test('weekly outflows sum to monthly outflows while keeping transfers excluded',
   const weeks = spendingByWeek(transactions, '2026-10')
   assert.equal(Number(weeks.reduce((sum, week) => sum + week.value, 0).toFixed(2)), 1272.7)
 })
+
+const { answer } = require('../lib/core-engine.ts')
+
+test('chat identifies the current month as empty before showing the last month with data', () => {
+  const blocks = answer('Quanto gastei este mês?', {
+    asOf: '2026-11-08',
+    transactions,
+    accounts: [],
+    balanceHistory: [],
+  })
+
+  assert.match(blocks[0].text, /Em novembro ainda não há movimentações/)
+  assert.match(blocks[0].text, /último mês com dados é outubro/)
+  assert.match(blocks[1].text, /Em outubro você gastou/)
+  assert.match(blocks[1].text, /1\.272,70/)
+  assert.match(blocks[1].text, /8\.500,00/)
+  assert.match(blocks[1].text, /Moradia/)
+})
+test('chat category table matches dashboard category values and percentages', () => {
+  const snapshot = {
+    asOf: '2026-11-08',
+    transactions,
+    accounts: [],
+    balanceHistory: [],
+  }
+  const blocks = answer('gastos por categoria', snapshot)
+  const table = blocks.find((block) => block.type === 'table')
+  const slices = spendingByCategory(transactions, '2026-10')
+
+  assert.ok(table)
+  assert.equal(table.rows.length, slices.length)
+
+  for (const [index, slice] of slices.entries()) {
+    const row = table.rows[index]
+    const amount = Number(row.valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'))
+    const percent = Number(row.pct.replace('%', '').replace(',', '.'))
+
+    assert.equal(amount, Number(slice.value.toFixed(2)))
+    assert.ok(Math.abs(percent - slice.percent) <= 0.11)
+  }
+
+  const housing = table.rows.find((row) => row.cat === 'Moradia')
+  assert.ok(housing)
+  assert.equal(Number(housing.valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')), 1105)
+})
