@@ -113,6 +113,8 @@ do {
   offset += batch.length;
 } while (offset < totalTransactions);
 
+const accountNames = new Map((accountsResponse.accounts || []).map(account => [account.account_id, account.name]));
+
 const recent = [...transactions]
   .sort((a, b) => String(b.date).localeCompare(String(a.date)))
   .slice(0, 5)
@@ -122,10 +124,8 @@ const recent = [...transactions]
     amount: money(transaction.amount),
     currency: transaction.iso_currency_code || transaction.unofficial_currency_code || null,
     category: categoryOf(transaction),
-    account_name: accounts.find(account => account.account_id === transaction.account_id)?.name || null,
+    account_name: accountNames.get(transaction.account_id) || null,
   }));
-
-const accountNames = new Map((accountsResponse.accounts || []).map(account => [account.account_id, account.name]));
 const expenseTransactions = transactions.filter(transaction => transaction.amount > 0 && !isTransfer(transaction));
 const categoryPatterns = groupExpenses(expenseTransactions, categoryOf).slice(0, 3);
 const monthlyPatterns = groupExpenses(expenseTransactions, transaction => String(transaction.date || '').slice(0, 7));
