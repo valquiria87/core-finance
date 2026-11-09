@@ -12,12 +12,12 @@ Esta auditoria separa o que está visível no repositório, o que o guia do inst
 
 | Etapa | O que o desafio pede | Evidência encontrada | Estado e lacuna |
 |---|---|---|---|
-| P01 — Pluggy MCP | Conectar ao servidor remoto e obter uma resposta real da documentação. | `evidencias/pluggy-docs-mcp-endpoints-transactions.png` e capturas complementares de endpoints. | **Parcial.** As capturas mostram pedidos feitos ao Pluggy Docs e respostas com fontes. Não há captura de `/mcp` mostrando o servidor ativo nem registro visível da chamada de ferramenta. |
+| P01 — Pluggy MCP | Conectar ao servidor remoto e obter uma resposta real da documentação. | `evidencias/a1-mcp-servidores-ativos.png`, `evidencias/a2-pluggy-item-com-fontes.png` e capturas complementares de endpoints. | **Com evidência visual parcial.** A1 mostra Pluggy ativo no cliente MCP; A2 mostra a consulta de documentação e as fontes. A trilha não registra o log bruto da chamada da ferramenta. |
 | P02 — conceitos | Explicar Pluggy, Item, conta e transação, com fontes. | `evidencias/pluggy-docs-mcp-conceito-pluggy-item.png` e `evidencias/pluggy-docs-mcp-conceitos-connector-item-product.png`. | **Com evidência visual.** As respostas exibem explicações e links de documentação. A captura do estado da conexão MCP continua ausente. |
 | P03 — endpoints e paginação | Listar endpoints de transações, distinguir versão atual e legada e explicar cursor. | `evidencias/pluggy-docs-mcp-endpoints-transactions.png`, `...-legado-retrieve-categoria.png`, `pluggy-endpoint-transactions-v2-get.png`, `pluggy-endpoint-transactions-v2-parametros.png` e `pluggy-endpoint-transactions-legado-migracao-v2.png`. | **Boa evidência visual.** O material mostra a referência atual `GET /v2/transactions`, a rota legada e parâmetros. Para uma trilha auditável completa, ainda faltaria a captura da chamada da ferramenta. |
 | P04 — aprofundamento opcional | Detalhar método, caminho, autenticação, parâmetros e continuação por cursor. | `evidencias/pluggy-docs-mcp-referencia-transaction-autenticacao.png` e capturas da referência v2/legada. | **Evidência visual parcial/forte para referência.** O PDF marca P04 como aprofundamento opcional. |
-| P05 — Plaid MCP | Confirmar que o servidor local Plaid está ativo e que suas ferramentas respondem. | Não há captura específica do comando `/mcp` com o servidor Plaid ativo nem da execução de P05 no repositório. | **Não comprovado no repositório.** As capturas de resultado Plaid não substituem o teste explícito do servidor. |
-| P06 — criar Item | Usar o MCP Plaid para criar Item Sandbox com produto `transactions` e obter o token. | O guia do instrutor registra que `get_sandbox_access_token` criou um Item e obteve token naquela execução histórica. Ele também registra que a instituição usada não foi confirmada. As capturas Plaid do projeto não mostram o resultado específico da criação do Item. | **Não comprovado para a execução mostrada nas capturas do projeto.** É necessário registrar a resposta sanitizada da criação, sem token, confirmando produto e instituição somente quando realmente verificados. |
+| P05 — Plaid MCP | Confirmar que o servidor local Plaid está ativo e que suas ferramentas respondem. | `evidencias/a1-mcp-servidores-ativos.png` mostra Pluggy e plaid ativos no painel MCP do Cline. | **Com evidência visual da conexão ativa.** A captura confirma os dois servidores ligados no cliente; não é um log de execução de ferramenta. |
+| P06 — criar Item | Usar o MCP Plaid para criar Item Sandbox com produto `transactions` e obter o token. | `evidencias/a3-plaid-item-criado.png` mostra a chamada da ferramenta `get_sandbox_access_token` com `initial_products: transactions` e a resposta de sucesso, sem exibir token ou credenciais. | **Com evidência visual.** O resultado confirma Item Sandbox criado e token obtido para o produto `transactions`. A instituição não é identificada na captura e não deve ser presumida. |
 | P07 — consultar dados | Chamar `POST /accounts/get` e `POST /transactions/get` no Sandbox, cobrir 90 dias e toda a paginação, mostrar contas, cinco transações e até três observações. | `evidencias/plaid-sandbox-contas-saldos.png`, `evidencias/plaid-sandbox-contas-transacoes-categorias.png` e `evidencias/plaid-sandbox-transacoes-convencao-sinais.png`. | **Resultado visual presente; prova técnica incompleta.** As capturas mostram 14 contas, 48 transações, cinco registros recentes, categorias e a convenção de sinais. Não mostram os pedidos HTTP, os endpoints, os parâmetros `count`/`offset`, `total_transactions` ou o percurso de todas as páginas. |
 
 ### Divergência entre o guia e as capturas Plaid do projeto
@@ -56,13 +56,15 @@ O brief salvo em `docs/prompt-v0.md` e `docs/prompt-lovable.md` descreve Pluggy 
 
 Essa escolha é uma evolução arquitetural do projeto, mas **não comprova a implementação Plaid da etapa P07 dentro do app**. Não é necessário migrar o app para Plaid apenas para demonstrar a prática MCP, desde que a separação esteja clara na entrega.
 
-## Evidências adicionais necessárias para fechar a trilha
+## Evidências novas e próximo fechamento
 
-1. **Uma captura de `/mcp`** em uma conversa nova mostrando Pluggy e Plaid ativos. Não mostre tela de configuração com credenciais.
-2. **Uma captura do P06** mostrando que a ferramenta criou o Item Sandbox e obteve token. O token deve estar totalmente oculto; a instituição só deve ser citada se confirmada na resposta ou em consulta verificável.
-3. **Uma captura técnica do P07** identificando `POST /accounts/get` e `POST /transactions/get`, datas efetivamente consultadas, `total_transactions`, contagem de páginas e total recuperado. O token e os segredos devem permanecer ocultos.
-4. **A resposta de padrões da mesma consulta Plaid**, com três observações rastreáveis a categoria, quantidade de registros e total.
-5. **A captura do chat publicado** deve ser da versão Pluggy atual, com moeda BRL e indicação de dados fictícios.
+As capturas locais `a1` a `a4` agora documentam a conexão dos servidores, a consulta Pluggy, a criação do Item Plaid e a listagem das contas/saldos. Os arquivos `a1`–`a4` foram selecionados para inclusão no repositório; não contêm credenciais visíveis.
+
+Foi criado `scripts/plaid-p07-report.mjs` para executar diretamente no Plaid Sandbox os dois endpoints exigidos, percorrer as páginas de transações e gerar um relatório sanitizado com contas, total informado pela Plaid, total recuperado, páginas, cinco transações recentes e três visões de gastos. O script **ainda não foi executado** porque as credenciais Plaid não estão no ambiente `.env.local` do aplicativo; elas devem ser fornecidas somente no ambiente local de execução, nunca versionadas.
+
+Para concluir a P07, falta executar o script com um Item Sandbox válido e guardar o relatório/captura da execução. O resultado precisa mostrar as datas reais consultadas, `total_transactions`, número de páginas e total recuperado. Não usar as capturas locais `a5-plaid-*.png`: elas mostram `/transactions/sync` e 150 registros do arquivo sintético `data/transactions_labeled.json`, não a chamada Plaid exigida de `POST /transactions/get`.
+
+Também falta manter a captura do chat publicado na versão Pluggy atual, em BRL e com aviso de dados fictícios.
 
 ## Capturas que não devem ser misturadas
 
