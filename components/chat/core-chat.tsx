@@ -159,12 +159,26 @@ export function CoreChat({ open, onOpenChange }: { open: boolean; onOpenChange: 
         { type: 'text', text: 'Não consegui falar com a sandbox agora. Verifique sua conexão e tente enviar de novo em instantes.' },
       ]
     }
-    const latest = conversations.find((conversation) => conversation.id === conversationId)
-    const latestMessages = latest?.messages ?? [...activeConversation.messages, userMessage]
-    updateConversation(conversationId, [
-      ...latestMessages,
-      { id: crypto.randomUUID(), role: 'assistant', blocks },
-    ])
+    const assistantMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      blocks,
+    }
+    setConversations((current) =>
+      current
+        .map((conversation) => {
+          if (conversation.id !== conversationId) return conversation
+          const nextMessages = [...conversation.messages, assistantMessage]
+          return {
+            ...conversation,
+            messages: nextMessages,
+            title: getConversationTitle(nextMessages),
+            updatedAt: Date.now(),
+          }
+        })
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .slice(0, MAX_CONVERSATIONS),
+    )
     setPending(false)
   }
 
