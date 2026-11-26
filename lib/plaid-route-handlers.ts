@@ -36,8 +36,18 @@ export function createSandboxGet(loadSnapshot: SnapshotLoader = getPlaidSnapshot
   return async function GET() {
     try {
       return Response.json(await loadSnapshot(), { headers: { 'Cache-Control': 'no-store' } })
-    } catch {
-      console.error('Plaid sandbox snapshot request failed')
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : 'Unknown error'
+      const safeDetail = detail
+        .replace(/access[_ -]?token\s*[:=]\s*[^\s,;]+/gi, 'access_token=[REDACTED]')
+        .replace(/secret\s*[:=]\s*[^\s,;]+/gi, 'secret=[REDACTED]')
+      console.error('Plaid sandbox snapshot request failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+        message: safeDetail.slice(0, 300),
+        errorCode: typeof error === 'object' && error !== null && 'error_code' in error ? error.error_code : undefined,
+        errorType: typeof error === 'object' && error !== null && 'error_type' in error ? error.error_type : undefined,
+        status: typeof error === 'object' && error !== null && 'status' in error ? error.status : undefined,
+      })
       return Response.json(
         { error: 'Não foi possível carregar os dados do Plaid Sandbox.' },
         { status: 503, headers: { 'Cache-Control': 'no-store' } },
