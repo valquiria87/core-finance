@@ -22,3 +22,4 @@ backend/test-output.txt
 .vercel
 .env*
 !.env.example
+!.env.plaid.local.example

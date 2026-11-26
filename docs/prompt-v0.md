@@ -34,9 +34,9 @@ Criar um web app em formato de chat, publicado, que responda em portugues sobre 
 - Em caso de erro/ausencia de dados, explicar o proximo passo ao usuario.
 
 ## 6. Requisitos de seguranca (Etapa 1)
-- Chaves apenas para prototipo no cliente (Etapa 1).
+- Chaves e tokens devem permanecer exclusivamente no servidor; nunca devem ser enviados ao navegador nem incluídos no código versionado.
 - Nenhuma chave, token ou senha em codigo versionado ou prints.
-- Prever Etapa 2: backend com chaves apenas no servidor.
+- A integração publicada usa Route Handlers no Next.js e credenciais somente em variáveis de ambiente do servidor.
 
 ## 7. Criterios de aceite
 - App publicado e acessivel (Vercel).
@@ -48,7 +48,7 @@ Criar um web app em formato de chat, publicado, que responda em portugues sobre 
 
 ## 8. Entregaveis
 - App web publicado na Vercel.
-- Codigo Next.js exportavel para GitHub (pasta frontend/ no repositorio core-finance).
+- Código Next.js exportável para GitHub, na raiz do repositório core-finance.
 - Repositorio GitHub publico (nome em minusculas, sem acento).
 - README.md completo.
 - Pasta evidencias/ com prints (sem segredos).
@@ -67,7 +67,7 @@ Criar um web app em formato de chat, publicado, que responda em portugues sobre 
 - Icones: Lucide.
 - Documentacao de design: docs/design-system.md.
 - Deploy: Vercel (one-click no v0).
-- Estrutura no repositorio: frontend/ (Next.js), backend/ (Node/Express), docs/, tests/, scripts/, SECURITY.md, README.md.
+- Estrutura no repositório: aplicação Next.js na raiz, backend/ (protótipo Node/Express), docs/, tests/, scripts/, SECURITY.md e README.md.
 
 ## 11. Direcao de arte (obrigatorio)
 
@@ -77,7 +77,7 @@ Criar um web app em formato de chat, publicado, que responda em portugues sobre 
 - Fonte: Plus Jakarta Sans ou Manrope. Numeros tabulares (tabular-nums) em todos os valores.
 - Grade de 8px, cantos de 16 a 24px, sombras suaves, icones da Lucide.
 - Contraste acessivel, foco visivel, responsivo de 360px a 1440px, sem rolagem horizontal.
-- Valores sempre em USD, formato "US$ 1.234,56".
+- Valores da aplicação sempre em BRL, formato "R$ 1.234,56".
 
 ## 12. Componentes obrigatorios
 

@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-11-09T18:40:18.234Z",
+  "environment": "Plaid Sandbox",
+  "endpoints": [
+    "POST /accounts/get",
+    "POST /transactions/get"
+  ],
+  "period": {
+    "start_date": "2026-08-11",
+    "end_date": "2026-11-09",
+    "days_requested": 90
+  },
+  "accounts": {
+    "count": 3,
+    "items": [
+      {
+        "name": "Everyday Checking",
+        "official_name": "Sandbox Bank Everyday Checking",
+        "type": "depository",
+        "subtype": "checking",
+        "currency": "USD",
+        "current_balance": 3245.77,
+        "available_balance": 3110.52
+      },
+      {
+        "name": "Rainy Day Savings",
+        "official_name": "Sandbox Bank High Yield Savings",
+        "type": "depository",
+        "subtype": "savings",
+        "currency": "USD",
+        "current_balance": 14280.55,
+        "available_balance": 14280.55
+      },
+      {
+        "name": "Rewards Visa",
+        "official_name": "Sandbox Bank Rewards Visa Signature",
+        "type": "credit",
+        "subtype": "credit card",
+        "currency": "USD",
+        "current_balance": 1842.16,
+        "available_balance": 6157.84
+      }
+    ]
+  },
+  "transactions": {
+    "total_transactions_reported_by_plaid": 34,
+    "transactions_retrieved": 34,
+    "pages_requested": 1,
+    "page_size": 500,
+    "recent_five": [
+      {
+        "date": "2026-10-24",
+        "name": "King County Metro Power",
+        "amount": 15.62,
+        "currency": "USD",
+        "category": "TRANSPORTATION",
+        "account_name": "Rewards Visa"
+      },
+      {
+        "date": "2026-10-23",
+        "name": "Acme Markets",
+        "amount": -2850.42,
+        "currency": "USD",
+        "category": "INCOME",
+        "account_name": "Everyday Checking"
+      },
+      {
+        "date": "2026-10-23",
+        "name": "INTEREST PAYMENT",
+        "amount": -20.11,
+        "currency": "USD",
+        "category": "INCOME",
+        "account_name": "Rainy Day Savings"
+      },
+      {
+        "date": "2026-10-21",
+        "name": "Fred Meyer",
+        "amount": 104.67,
+        "currency": "USD",
+        "category": "GENERAL_MERCHANDISE",
+        "account_name": "Rewards Visa"
+      },
+      {
+        "date": "2026-10-18",
+        "name": "Transfer to Everyday Checking",
+        "amount": 250,
+        "currency": "USD",
+        "category": "TRANSFER_OUT",
+        "account_name": "Rainy Day Savings"
+      }
+    ]
+  },
+  "spending_patterns": {
+    "top_categories": [
+      {
+        "label": "RENT_AND_UTILITIES",
+        "count": 3,
+        "total": 415.21
+      },
+      {
+        "label": "FOOD_AND_DRINK",
+        "count": 4,
+        "total": 348.54
+      },
+      {
+        "label": "GENERAL_MERCHANDISE",
+        "count": 3,
+        "total": 245.9
+      }
+    ],
+    "by_period": [
+      {
+        "label": "2026-09",
+        "count": 7,
+        "total": 584.1
+      },
+      {
+        "label": "2026-08",
+        "count": 4,
+        "total": 393.46
+      },
+      {
+        "label": "2026-10",
+        "count": 5,
+        "total": 236.79
+      }
+    ],
+    "by_account": [
+      {
+        "label": "Rewards Visa",
+        "count": 14,
+        "total": 942.81
+      },
+      {
+        "label": "Everyday Checking",
+        "count": 2,
+        "total": 271.54
+      }
+    ],
+    "note": "Saídas calculadas com amount positivo; transferências e pagamentos de empréstimo foram excluídos dos padrões de consumo."
+  },
+  "security": {
+    "credentials_included": false,
+    "access_token_included": false,
+    "account_ids_included": false
+  }
+}

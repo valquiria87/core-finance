@@ -1,4 +1,6 @@
-# Prompt enviado ao Lovable (Etapa 1) - formato OpenSpec
+# Especificação reconstruída para o Lovable (Etapa 1) — formato OpenSpec
+
+> **Nota de proveniência:** o prompt original literal enviado ao Lovable não foi preservado no repositório. Este documento reconstrói o escopo, os requisitos e os critérios de aceite a partir do briefing do desafio e da implementação; não é uma transcrição exata.
 
 ## 1. Objetivo
 Criar um web app em formato de chat, publicado, que responda em portugues sobre

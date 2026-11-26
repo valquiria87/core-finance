@@ -54,6 +54,11 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
           </Donut>
 
           <div className="min-w-0">
+            <div className="mb-2 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+              <span className="min-w-0 flex-1">Categoria</span>
+              <span className="w-20 shrink-0 text-right leading-tight">% das saídas</span>
+              <span className="w-24 shrink-0 text-right">Valor</span>
+            </div>
             <ul className="space-y-2.5">
               {slices.map((slice) => (
                 <li
@@ -65,8 +70,8 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
                   <span
                     className={
                       slice.nonConsumption
-                        ? 'flex-1 truncate text-text-muted'
-                        : 'flex-1 truncate'
+                        ? 'min-w-0 flex-1 truncate text-text-muted'
+                        : 'min-w-0 flex-1 truncate'
                     }
                   >
                     {slice.label}
@@ -75,11 +80,11 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
                     )}
                   </span>
 
-                  <span className="text-xs text-text-muted tabular-nums">
+                  <span className="w-20 shrink-0 text-right text-xs text-text-muted tabular-nums">
                     {formatPercent(slice.percent)}
                   </span>
 
-                  <span className="w-24 text-right font-semibold tabular-nums">
+                  <span className="w-24 shrink-0 text-right font-semibold tabular-nums">
                     {formatBRL(slice.value)}
                   </span>
                 </li>
@@ -88,7 +93,7 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-xs">
               <span className="text-text-muted">
-                * Transferências e pagamento de dívida: não é consumo.
+                * não é consumo.
               </span>
 
               <span className="font-semibold tabular-nums">

@@ -10,14 +10,14 @@ export function DataTable({ block }: { block: TableBlock }) {
     <figure className="w-full overflow-hidden rounded-2xl border bg-surface-elev">
       <figcaption className="border-b px-3 py-2 text-xs font-semibold">{block.title}</figcaption>
       <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={block.title}>
-        <table className="w-full min-w-[420px] text-xs">
+        <table className="w-full min-w-0 table-auto text-xs">
           <thead>
             <tr className="text-text-muted">
               {block.columns.map((c) => (
                 <th
                   key={c.key}
                   scope="col"
-                  className={cn('px-3 py-2 font-medium whitespace-nowrap', c.align === 'right' ? 'text-right' : 'text-left')}
+                  className={cn('px-2 py-2 font-medium', c.align === 'right' ? 'text-right' : 'text-left')}
                 >
                   {c.label}
                 </th>
@@ -33,8 +33,8 @@ export function DataTable({ block }: { block: TableBlock }) {
                     <td
                       key={c.key}
                       className={cn(
-                        'px-3 py-2 whitespace-nowrap tabular-nums',
-                        c.align === 'right' ? 'text-right font-semibold' : 'text-left',
+                        'px-2 py-2 tabular-nums',
+                        c.align === 'right' ? 'whitespace-nowrap text-right font-semibold' : 'min-w-0 whitespace-normal break-words text-left',
                         tone && toneClass[tone],
                       )}
                     >

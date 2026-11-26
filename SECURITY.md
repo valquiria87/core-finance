@@ -6,6 +6,8 @@ Core Finance is a portfolio project that currently uses fictional Pluggy Sandbox
 
 ## Implemented webhook controls
 
+The deployed Next.js application uses the Pluggy webhook only. Plaid is limited to the MCP/Sandbox learning lab and the separate Express prototype in backend/; there is no Plaid webhook route in the Next.js application. The Express prototype retains its ES256 signature-verification example and is not the deployed webhook runtime.
+
 The Pluggy webhook at `POST /api/webhooks/pluggy` currently implements:
 
 - A configured shared secret in the `x-pluggy-webhook-secret` header, compared with a timing-safe equality check.
@@ -21,11 +23,13 @@ The shared secret header is **not** a cryptographic HMAC signature of the raw re
 
 ## Known gaps and risks
 
-- No HMAC request-body signature verification.
-- No dedicated replay-protection mechanism (for example, a verified timestamp/nonce window).
-- `/api/core` and `/api/sandbox` are publicly reachable application routes and currently have no rate limiting. Do not expose real financial data through them.
-- Some error paths may expose diagnostic details to clients. Normalize public API errors and keep provider/database internals in server logs only.
-- Reconfirm Row Level Security (RLS), grants, and policies for every Supabase table and view. Administrative server access uses a privileged secret; it must never be exposed to the browser.
+- Pluggy's documented webhook verification uses configured custom headers and `clientId`; its current documentation does not describe HMAC signatures or a signed timestamp/nonce.
+- Exact event replays are blocked by persistent `eventId` deduplication and the database unique constraint. This does not provide cryptographic body integrity or prevent a forged payload with a new event ID if the shared secret is compromised.
+- `/api/core` is limited to 20 requests per IP per 60-second window; `/api/sandbox` and `/api/insights` are limited to 60 requests per IP per 60-second window. Limits are enforced atomically in Supabase across serverless instances. The public routes still expose fictional Sandbox data only; do not expose real financial data through them.
+- The snapshot, webhook-event, and API rate-limit tables are RLS-enabled, have no client policies, and grant data access only to `service_role`; the operational health view uses `security_invoker=true` and is also service-role-only.
+- User-scoped `accounts`, `transactions`, and `pluggy_items` tables have RLS enabled and owner-scoped SELECT policies, but currently have no table privileges granted to `anon`, `authenticated`, or `service_role`; they are not part of the active snapshot read/write path.
+- The internal `public.rls_auto_enable()` event-trigger function is `SECURITY DEFINER`. EXECUTE has been revoked from `PUBLIC`, `anon`, and `authenticated`; the `ensure_rls` event trigger remains enabled and its owner retains execution.
+- Administrative server access uses a privileged secret; it must never be exposed to the browser.
 - Webhook processing is synchronous and has no durable queue.
 - The health view is an aggregate operational signal, not an intrusion-detection or replay-prevention system.
 - Sandbox data is fictional and does not establish production readiness.

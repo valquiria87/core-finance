@@ -8,6 +8,7 @@
 - **Superfícies:** em camadas, bordas de 1px sutis.
 - **Cor de destaque:** coral.
 - **Entradas:** verde-menta. **Saídas:** coral/vermelho suave.
+- **Variação financeira:** a cor representa o efeito financeiro, não apenas a direção da seta. Aumento de entradas e queda de saídas são favoráveis (verde); queda de entradas e aumento de saídas são desfavoráveis (coral). Variação zero usa texto neutro “Sem variação”, sem seta.
 - **Nada de roxo genérico.**
 - **Tipografia:** Plus Jakarta Sans ou Manrope (Google Fonts), números tabulares (`tabular-nums`) em todos os valores. Títulos fortes, rótulos pequenos em cinza.
 - **Grade:** 8px. **Cantos:** 16 a 24px. **Sombras:** suaves. **Ícones:** Lucide.
@@ -66,7 +67,7 @@ Todos os valores monetários usam `font-variant-numeric: tabular-nums`.
 
 ### 4. Entradas x saídas do período
 - Dois cartões pequenos lado a lado.
-- Indicador de variação com seta para cima (verde-menta) ou para baixo (coral).
+- Indicador de variação com seta e cor semântica: entradas maiores e saídas menores em verde; entradas menores e saídas maiores em coral. Variação zero em neutro, sem seta.
 
 ### 5. Gastos por categoria
 - Gráfico de rosca (donut) com total no centro.
