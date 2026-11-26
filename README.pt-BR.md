@@ -23,7 +23,7 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 | Entregável | Onde está |
 |---|---|
 | Cliente/usuário e experiência do assistente | O chat voltado ao usuário fica integrado ao dashboard e é aberto pelo botão flutuante “Falar com o Core”. Responde sobre saldos, transações, gastos por categoria/período e padrões disponíveis no snapshot Sandbox; veja as capturas do chat e do dashboard em [evidencias/](evidencias/). |
-| Prompt/especificação do builder (v0) | Brief reconstruído abaixo. O prompt original literal não foi preservado no repositório; portanto, este é um resumo fiel do escopo, não uma citação. |
+| Prompt/especificação do builder (v0) | [Especificação OpenSpec reconstruída](docs/prompt-lovable.md), com a proveniência e as diferenças em relação à implementação final declaradas. O prompt original literal não foi preservado. |
 | MCP Pluggy | Servidor remoto Streamable HTTP: `https://mcp.pluggy.ai/mcp`; pesquisa documentada em `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP no runtime do chat | Servidor e cliente MCP internos via SDK oficial; ferramenta somente leitura `get_finance_snapshot` fornece o snapshot Plaid ao chat. |
 | Edge Function MCP Pluggy | Implementação separada em `supabase/functions/dio-bank-mcp`, com transporte Streamable HTTP e ferramenta `resumo_mensal`; testes locais aprovados, secrets configurados no Supabase, mas ainda sem deploy. |

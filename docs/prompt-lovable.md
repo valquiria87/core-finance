@@ -1,6 +1,8 @@
 # Especificação reconstruída para o Lovable (Etapa 1) — formato OpenSpec
 
 > **Nota de proveniência:** o prompt original literal enviado ao Lovable não foi preservado. Este documento reconstrói o escopo e os requisitos do projeto; não deve ser tratado como transcrição exata do prompt original.
+>
+> **Evolução da implementação:** esta especificação registra a direção inicial do protótipo. A versão final usa Plaid Sandbox como fonte principal do dashboard e do chat; Pluggy permanece como integração alternativa independente e fonte de documentação MCP. O chat usa MCP interno em memória, e a Edge Function Pluggy é opcional, local e ainda não publicada. Essas diferenças são decisões de implementação posteriores, não funcionalidades remotas já entregues.
 
 ## 1. Objetivo
 Criar um web app em formato de chat, publicado, que responda em portugues sobre

@@ -23,7 +23,7 @@ Core Finance combines a financial dashboard with a Portuguese conversational int
 | Deliverable | Where to find it |
 |---|---|
 | Client/user and assistant experience | The customer-facing chat is embedded in the dashboard and opened from the floating “Falar com o Core” launcher. It answers questions about balances, transactions, spending by category/month, and patterns available in the Sandbox snapshot; see the chat and dashboard captures in [evidencias/](evidencias/). |
-| Builder (v0) prompt/specification | Reconstructed brief below. The original verbatim prompt was not retained in the repository, so this is a faithful scope summary, not a quotation. |
+| Builder (v0) prompt/specification | [Reconstructed OpenSpec brief](docs/prompt-lovable.md), with provenance and differences from the final implementation stated explicitly. The original verbatim prompt was not retained. |
 | MCP: Pluggy documentation | Streamable HTTP endpoint: `https://mcp.pluggy.ai/mcp`; documentation research screenshots in `evidencias/pluggy-docs-mcp-*.png`. |
 | MCP in chat runtime | Internal MCP server and client using the official SDK; read-only `get_finance_snapshot` tool supplies the Plaid snapshot to chat. |
 | Custom remote MCP Edge Function | Local implementation at `supabase/functions/dio-bank-mcp`, using Streamable HTTP and the read-only `resumo_mensal` tool against Pluggy Sandbox. Tests pass locally; Supabase secrets are configured, but the function has **not** been deployed and no remote endpoint has been validated. See its [function README](supabase/functions/dio-bank-mcp/README.md). |
