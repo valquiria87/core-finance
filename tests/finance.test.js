@@ -66,14 +66,11 @@ test('monthly flows exclude both sides of card bill payments and internal transf
   assert.deepEqual(currencyFlows.outflow, [{ currency: null, amount: 1272.7 }])
 })
 
-test('category chart preserves transfers in the breakdown but marks them non-consumption', () => {
-  const slices = spendingByCategory(transactions, '2026-10')
+test('category chart includes only consumption and reconciles with monthly outflows', () => {
+  const slices = spendingByCategoryAndCurrency(transactions, '2026-10')
   const total = slices.reduce((sum, slice) => sum + slice.value, 0)
-  const transfer = slices.find((slice) => slice.id === 'transfer')
-
-  assert.equal(Number(total.toFixed(2)), 1372.7)
-  assert.equal(transfer.nonConsumption, true)
-  assert.equal(Number(slices.filter((slice) => !slice.nonConsumption).reduce((sum, slice) => sum + slice.value, 0).toFixed(2)), 1272.7)
+  assert.equal(Number(total.toFixed(2)), 1272.7)
+  assert.equal(slices.some((slice) => slice.id === 'transfer' || slice.id === 'debt'), false)
 })
 
 test('weekly outflows sum to monthly outflows while keeping transfers excluded', () => {

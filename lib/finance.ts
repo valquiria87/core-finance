@@ -112,7 +112,7 @@ export interface CategorySlice {
 export function spendingByCategoryAndCurrency(txs: Transaction[], key: string): CategorySlice[] {
   const totals = new Map<string, { id: CategoryId; currency: string | null; value: number }>()
   for (const t of inMonth(txs, key)) {
-    if (!isOutflow(t)) continue
+    if (!isOutflow(t) || CATEGORIES[t.category].nonConsumption) continue
     const currency = t.currency ?? null
     const mapKey = `${currency ?? ''}:${t.category}`
     const current = totals.get(mapKey)

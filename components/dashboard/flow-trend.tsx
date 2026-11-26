@@ -1,6 +1,7 @@
 import { Activity } from 'lucide-react'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
+import { CATEGORIES } from '@/lib/categories'
 import { formatCurrency } from '@/lib/format'
 import { cumulativeCashFlow, isInflow, isOutflow, latestTransactionDate, monthKey } from '@/lib/finance'
 import type { SandboxSnapshot } from '@/lib/types'
@@ -29,9 +30,9 @@ function FlowTrendForCurrency({ data, currency }: { data: SandboxSnapshot; curre
 
     return {
       ...week,
-      inflow: weeklyTransactions.filter(isInflow).reduce((sum, transaction) => sum - transaction.amount, 0),
+      inflow: weeklyTransactions.filter((transaction) => isInflow(transaction) && !CATEGORIES[transaction.category].nonConsumption).reduce((sum, transaction) => sum - transaction.amount, 0),
       outflow: weeklyTransactions
-        .filter((transaction) => isOutflow(transaction) && transaction.category !== 'transfer')
+        .filter((transaction) => isOutflow(transaction) && transaction.category !== 'transfer' && transaction.category !== 'debt')
         .reduce((sum, transaction) => sum + transaction.amount, 0),
     }
   })
@@ -120,7 +121,7 @@ function FlowTrendForCurrency({ data, currency }: { data: SandboxSnapshot; curre
             ))}
           </div>
           <p className="border-t pt-3 text-xs text-text-muted">
-            Valores calculados a partir das transações disponíveis. Transferências internas não entram nas saídas.
+            Valores calculados a partir das transações disponíveis. Transferências e pagamentos de dívida não entram nas saídas de consumo.
           </p>
         </div>
       )}
@@ -131,7 +132,7 @@ function FlowTrendForCurrency({ data, currency }: { data: SandboxSnapshot; curre
             <div>
               <h3 className="text-sm font-semibold">Movimentação líquida acumulada</h3>
               <p className="mt-1 text-xs text-text-muted">
-                Entradas menos saídas desde a primeira transação disponível, incluindo transferências e pagamentos registrados
+                Entradas menos saídas de consumo desde a primeira transação disponível; não representa saldo bancário
               </p>
             </div>
             <p className="text-sm font-semibold tabular-nums">

@@ -4,7 +4,6 @@ import { Donut } from '@/components/finance/donut'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
 import {
-  consumptionByCurrency,
   latestTransactionDate,
   monthKey,
   spendingByCategoryAndCurrency,
@@ -16,7 +15,6 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
   const key = monthKey(latestTransactionDate(data.transactions, data.asOf))
   const slices = spendingByCategoryAndCurrency(data.transactions, key)
   const currencyKeys = [...new Set(slices.map((item) => item.currency ?? ''))]
-  const consumption = consumptionByCurrency(data.transactions, key)
 
   const monthLabel = new Intl.DateTimeFormat('pt-BR', {
     month: 'long',
@@ -29,7 +27,7 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
       <SectionTitle
         id="categorias-title"
         title="Gastos por categoria"
-        subtitle={`${monthLabel} · todas as saídas`}
+        subtitle={`${monthLabel} · despesas de consumo`}
       />
 
       {slices.length === 0 ? (
@@ -44,15 +42,14 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
             const currencySlices = slices.filter((item) => (item.currency ?? '') === currencyKey)
             const currency = currencySlices[0]?.currency ?? null
             const total = currencySlices.reduce((sum, item) => sum + item.value, 0)
-            const consumed = consumption.find((item) => (item.currency ?? '') === currencyKey)?.amount ?? 0
             return <div key={currencyKey || 'unknown'} className="grid items-center gap-6 border-t pt-5 first:border-0 first:pt-0 sm:grid-cols-[auto_1fr]">
           <Donut
             slices={currencySlices}
             size={196}
-            label="Gráfico de rosca dos gastos por categoria"
+            label="Gráfico de rosca das despesas de consumo por categoria"
           >
             <span className="text-xs font-medium text-text-muted">
-              Total de saídas
+              Consumo total
             </span>
             <span className="text-lg font-bold tabular-nums">
               {formatCurrency(total, currency)}
@@ -92,18 +89,9 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
               ))}
             </ul>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-xs">
-              <span className="text-text-muted">
-                * Transferências e pagamento de dívida: não é consumo.
-              </span>
-
-              <span className="font-semibold tabular-nums">
-                Consumo real:{' '}
-                <span className="text-outflow">
-                  {formatCurrency(consumed, currency)}
-                </span>
-              </span>
-            </div>
+            <p className="mt-4 border-t pt-3 text-xs text-text-muted">
+              Transferências e pagamentos de dívida são excluídos do consumo.
+            </p>
           </div>
             </div>
           })}
