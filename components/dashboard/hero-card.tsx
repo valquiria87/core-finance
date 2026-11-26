@@ -32,9 +32,9 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <h2 id="hero-cash">Dinheiro em contas</h2>
         </div>
 
-        <div className="mt-4 flex min-w-0 flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+        <div className="mt-4 flex min-w-0 flex-col items-start gap-3">
           <div className="min-w-0">
-            <p className="whitespace-nowrap text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl xl:text-4xl 2xl:text-5xl">
+            <p className="w-full whitespace-nowrap text-[clamp(1.35rem,3vw,2.75rem)] font-extrabold tracking-tight tabular-nums">
               {cash.length === 1 ? <CountUp value={cash[0].amount} currency={cash[0].currency} /> : cash.length ? <span className="space-y-1">{cash.map((item) => <span key={item.currency ?? 'unknown'} className="block whitespace-nowrap text-xl sm:text-2xl">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
             </p>
 
@@ -54,7 +54,7 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
               label="Evolução do saldo em contas"
             />
           ) : (
-            <div className="w-full max-w-48 text-left text-xs text-text-muted sm:text-right">
+            <div className="w-full min-w-0 max-w-none text-left text-xs text-text-muted">
               <p>Histórico de saldo não fornecido pela instituição.</p>
               <a
                 href="#flow-trend-title"
@@ -66,7 +66,7 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           )}
         </div>
 
-        <p className="mt-6 break-words text-xs text-text-muted">
+        <p className="mt-4 break-words text-xs text-text-muted">
           Soma apenas de contas de depósito (corrente e poupança). Dívidas e investimentos ficam separados.
         </p>
       </section>
