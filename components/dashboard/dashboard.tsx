@@ -42,8 +42,8 @@ export function Dashboard() {
       </div>
       <AccountsSection accounts={data.accounts} />
       <InsightsSection />
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-        <div className="space-y-4 md:space-y-6">
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[1fr_1.1fr] [&>*]:min-w-0">
+        <div className="min-w-0 space-y-4 md:space-y-6">
           <FlowCards data={data} />
           <FlowTrend data={data} />
           <CategorySpending data={data} />

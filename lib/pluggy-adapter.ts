@@ -40,7 +40,7 @@ function mapCategory(category = '', description = ''): CategoryId {
     return 'leisure'
   }
 
-  return 'shopping'
+  return 'other'
 }
 
 export function createPluggySnapshot(

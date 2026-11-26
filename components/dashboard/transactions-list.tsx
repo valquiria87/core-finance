@@ -7,7 +7,7 @@ import { CategoryIcon } from '@/components/finance/category-icon'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
 import { groupByDay, isInflow, isOutflow } from '@/lib/finance'
-import { formatBRL, formatDayHeading } from '@/lib/format'
+import { formatCurrency, formatDayHeading } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -49,7 +49,7 @@ export function TransactionsList({ data }: { data: SandboxSnapshot }) {
       <SectionTitle
         id="transacoes-title"
         title="Transações"
-        subtitle={`${filtered.length} transações · ${allGroups.length} dias com movimentações · BRL`}
+        subtitle={`${filtered.length} transações · ${allGroups.length} dias com movimentações`}
         action={
           <div
             role="group"
@@ -138,7 +138,7 @@ export function TransactionsList({ data }: { data: SandboxSnapshot }) {
                             {out ? '− ' : '+ '}
                           </span>
 
-                          {formatBRL(Math.abs(transaction.amount))}
+                          {formatCurrency(Math.abs(transaction.amount), transaction.currency)}
                         </p>
                       </div>
                     </li>

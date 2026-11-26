@@ -62,23 +62,15 @@ export function InsightsSection() {
         <Surface className="p-4 md:p-5">
           <div className="flex items-center gap-2 text-text-muted">
             <TrendingUp className="size-4" aria-hidden="true" />
-            <span className="text-sm font-medium">
-              {data.monthEnd.isClosedMonth ? 'Total do mês' : 'Previsão mensal'}
-            </span>
+            <span className="text-sm font-medium">Previsão mensal</span>
           </div>
 
           <p className="mt-3 text-xl font-bold tabular-nums">
-            {formatBRL(
-              data.monthEnd.isClosedMonth
-                ? data.monthEnd.spentSoFar
-                : data.monthEnd.predictedMonthEnd,
-            )}
+            {formatBRL(data.monthEnd.predictedMonthEnd)}
           </p>
 
           <p className="mt-1 text-xs text-text-muted">
-            {data.monthEnd.isClosedMonth
-              ? `Total registrado em ${monthLabel}`
-              : `Estimativa para ${monthLabel}`}
+            Estimativa para {monthLabel}
           </p>
         </Surface>
 
@@ -100,7 +92,7 @@ export function InsightsSection() {
         <Surface className="p-4 md:p-5">
           <div className="flex items-center gap-2 text-text-muted">
             <Repeat className="size-4" aria-hidden="true" />
-            <span className="text-sm font-medium">Despesas recorrentes</span>
+            <span className="text-sm font-medium">Assinaturas</span>
           </div>
 
           <p className="mt-3 text-xl font-bold tabular-nums">
@@ -109,7 +101,7 @@ export function InsightsSection() {
 
           {data.subscriptions.length > 0 ? (
             <ul className="mt-2 space-y-1 text-xs text-text-muted">
-              {data.subscriptions.slice(0, 6).map((item) => (
+              {data.subscriptions.slice(0, 3).map((item) => (
                 <li key={item.merchant}>
                   {item.merchant} · {formatBRL(item.averageAmount)}
                 </li>
@@ -149,9 +141,7 @@ export function InsightsSection() {
       </div>
 
       <p className="text-xs text-text-muted">
-        {data.monthEnd.isClosedMonth
-          ? `Mês encerrado. Total de consumo registrado até ${dataThroughLabel}.`
-          : `Previsão baseada na média diária até ${dataThroughLabel}, projetada para o fim de ${monthLabel}. Os resultados são estimativas e não garantem despesas futuras.`}
+        Previsão baseada na média diária até {dataThroughLabel}, projetada para o fim de {monthLabel}. Os resultados são estimativas e não garantem despesas futuras.
       </p>
     </section>
   )

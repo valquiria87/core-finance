@@ -1,6 +1,6 @@
 import { Nfc } from 'lucide-react'
 import { SectionTitle } from '@/components/finance/surface'
-import { formatBRL, formatPercent } from '@/lib/format'
+import { formatCurrency, formatPercent } from '@/lib/format'
 import type { Account } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -13,7 +13,7 @@ function DepositCard({ account, delay }: { account: Account; delay: number }) {
 
   return (
     <article
-      className="animate-fade-up group relative flex min-h-48 min-w-0 flex-col justify-between overflow-hidden rounded-3xl p-5 text-white shadow-[0_12px_32px_-16px_rgb(0_0_0/0.6)] transition-transform duration-200 hover:-translate-y-1"
+      className="animate-fade-up group relative flex min-w-0 min-h-48 flex-col justify-between overflow-hidden rounded-3xl p-5 text-white shadow-[0_12px_32px_-16px_rgb(0_0_0/0.6)] transition-transform duration-200 hover:-translate-y-1"
       style={{
         animationDelay: `${delay}ms`,
         background: isSavings
@@ -27,12 +27,12 @@ function DepositCard({ account, delay }: { account: Account; delay: number }) {
         className="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-white/[0.06]"
       />
 
-      <div className="flex min-w-0 items-start justify-between gap-3">
-        <div className="min-w-0">
+      <div className="flex items-start justify-between">
+        <div>
           <p className="text-xs font-medium text-white/70">
             {isSavings ? 'Poupança' : 'Conta corrente'}
           </p>
-          <p className="truncate font-semibold" title={account.name}>{account.name}</p>
+          <p className="break-words text-sm font-semibold">{account.name}</p>
         </div>
 
         <Nfc className="size-5 text-white/70" aria-hidden="true" />
@@ -51,17 +51,17 @@ function DepositCard({ account, delay }: { account: Account; delay: number }) {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
+      <div className="flex items-end justify-between gap-3">
+        <div>
           <p className="text-xs text-white/70">Saldo atual</p>
-          <p className="break-words text-xl font-bold leading-tight tabular-nums">
+          <p className="shrink-0 whitespace-nowrap text-lg font-bold tabular-nums">
             {account.current == null
               ? 'Não informado'
-              : formatBRL(account.current)}
+              : formatCurrency(account.current, account.currency)}
           </p>
         </div>
 
-        <div className="min-w-0 text-right">
+        <div className="text-right">
           <p className="text-xs text-white/70">Disponível</p>
           <p
             className={cn(
@@ -71,7 +71,7 @@ function DepositCard({ account, delay }: { account: Account; delay: number }) {
           >
             {account.available == null
               ? 'Não informado'
-              : formatBRL(account.available)}
+              : formatCurrency(account.available, account.currency)}
           </p>
         </div>
       </div>
@@ -89,7 +89,7 @@ function CreditCardTile({ account, delay }: { account: Account; delay: number })
 
   return (
     <article
-      className="animate-fade-up flex min-h-48 min-w-0 flex-col rounded-3xl border bg-surface p-5 transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-coral/40"
+      className="animate-fade-up flex min-w-0 min-h-48 flex-col overflow-hidden rounded-3xl border bg-surface p-5 transition-[transform,border-color] duration-200 hover:-translate-y-1 hover:border-coral/40"
       style={{ animationDelay: `${delay}ms` }}
       aria-label={`${account.name}, final ${account.mask}`}
     >
@@ -101,7 +101,7 @@ function CreditCardTile({ account, delay }: { account: Account; delay: number })
           <p className="truncate font-semibold">{account.name}</p>
         </div>
 
-        <span className="shrink-0 font-mono text-xs tracking-widest text-text-muted">
+        <span className="font-mono text-xs tracking-widest text-text-muted">
           ••{account.mask}
         </span>
       </div>
@@ -111,10 +111,10 @@ function CreditCardTile({ account, delay }: { account: Account; delay: number })
           Fatura em aberto / valor devido
         </p>
 
-        <p className="break-words text-xl font-bold leading-tight text-coral tabular-nums sm:text-2xl">
+        <p className="text-2xl font-bold text-coral tabular-nums">
           {account.current == null
             ? <Missing />
-            : formatBRL(account.current)}
+            : formatCurrency(account.current, account.currency)}
         </p>
       </div>
 
@@ -142,7 +142,7 @@ function CreditCardTile({ account, delay }: { account: Account; delay: number })
               <span>{formatPercent(usage)} do limite usado</span>
 
               <span className="text-right">
-                Limite {formatBRL(account.limit!)}
+                Limite {formatCurrency(account.limit!, account.currency)}
               </span>
             </div>
           </>
@@ -157,6 +157,35 @@ function CreditCardTile({ account, delay }: { account: Account; delay: number })
   )
 }
 
+function OtherAccountCard({ account, delay }: { account: Account; delay: number }) {
+  const isLoan = account.type === 'loan'
+  const isInvestment = account.type === 'investment'
+  const label = isLoan ? 'Empréstimo' : isInvestment ? 'Investimento' : 'Outra conta'
+  const balanceLabel = isLoan ? 'Saldo devedor' : isInvestment ? 'Valor investido' : 'Saldo informado'
+
+  return (
+    <article
+      className="animate-fade-up flex min-w-0 min-h-48 flex-col justify-between overflow-hidden rounded-3xl border bg-surface p-5"
+      style={{ animationDelay: `${delay}ms` }}
+      aria-label={`${account.name}, ${label}`}
+    >
+      <div>
+        <p className="text-xs font-medium text-text-muted">{label}</p>
+        <p className="break-words text-sm font-semibold">{account.name}</p>
+      </div>
+      <div className="mt-6">
+        <p className="text-xs text-text-muted">{balanceLabel}</p>
+        <p className={cn('break-words text-xl font-bold tabular-nums', isLoan && 'text-coral')}>
+          {account.current == null ? <Missing /> : formatCurrency(account.current, account.currency)}
+        </p>
+      </div>
+      <p className="mt-4 text-xs text-text-muted">
+        {isLoan ? 'Não compõe o dinheiro disponível.' : isInvestment ? 'Não compõe o saldo de contas de depósito.' : 'Classificação não incluída nos totais de caixa, dívida ou investimentos.'}
+      </p>
+    </article>
+  )
+}
+
 export function AccountsSection({ accounts }: { accounts: Account[] }) {
   return (
     <section
@@ -167,10 +196,10 @@ export function AccountsSection({ accounts }: { accounts: Account[] }) {
       <SectionTitle
         id="contas-title"
         title="Contas"
-        subtitle={`${accounts.length} contas conectadas · Pluggy Sandbox · valores em reais`}
+        subtitle={`${accounts.length} contas conectadas · Plaid Sandbox`}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid w-full min-w-0 max-w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
         {accounts.map((account, index) =>
           account.type === 'credit' ? (
             <CreditCardTile
@@ -178,8 +207,14 @@ export function AccountsSection({ accounts }: { accounts: Account[] }) {
               account={account}
               delay={index * 60}
             />
-          ) : (
+          ) : account.type === 'checking' || account.type === 'savings' ? (
             <DepositCard
+              key={account.id}
+              account={account}
+              delay={index * 60}
+            />
+          ) : (
+            <OtherAccountCard
               key={account.id}
               account={account}
               delay={index * 60}

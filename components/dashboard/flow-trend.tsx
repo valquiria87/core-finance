@@ -1,11 +1,12 @@
 import { Activity } from 'lucide-react'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
-import { formatBRL } from '@/lib/format'
+import { formatCurrency } from '@/lib/format'
 import { cumulativeCashFlow, isInflow, isOutflow, latestTransactionDate, monthKey } from '@/lib/finance'
 import type { SandboxSnapshot } from '@/lib/types'
 
-export function FlowTrend({ data }: { data: SandboxSnapshot }) {
+function FlowTrendForCurrency({ data, currency }: { data: SandboxSnapshot; currency: string | null }) {
+  const transactions = data.transactions.filter((transaction) => (transaction.currency ?? null) === currency)
   const key = monthKey(latestTransactionDate(data.transactions, data.asOf))
   const [year, month] = key.split('-').map(Number)
   const monthLabel = new Intl.DateTimeFormat('pt-BR', {
@@ -20,7 +21,7 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
     { label: '15–21', from: 15, to: 21 },
     { label: '22–31', from: 22, to: 31 },
   ].map((week) => {
-    const transactions = data.transactions.filter((transaction) => {
+      const weeklyTransactions = transactions.filter((transaction) => {
       if (!transaction.date.startsWith(key)) return false
       const day = Number(transaction.date.slice(8, 10))
       return day >= week.from && day <= week.to
@@ -28,8 +29,8 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
 
     return {
       ...week,
-      inflow: transactions.filter(isInflow).reduce((sum, transaction) => sum - transaction.amount, 0),
-      outflow: transactions
+      inflow: weeklyTransactions.filter(isInflow).reduce((sum, transaction) => sum - transaction.amount, 0),
+      outflow: weeklyTransactions
         .filter((transaction) => isOutflow(transaction) && transaction.category !== 'transfer')
         .reduce((sum, transaction) => sum + transaction.amount, 0),
     }
@@ -37,7 +38,7 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
 
   const maxValue = Math.max(1, ...weeks.flatMap((week) => [week.inflow, week.outflow]))
   const hasData = weeks.some((week) => week.inflow > 0 || week.outflow > 0)
-  const movement = cumulativeCashFlow(data.transactions)
+  const movement = cumulativeCashFlow(transactions)
   const minMovement = Math.min(0, ...movement.map((point) => point.cumulative))
   const maxMovement = Math.max(0, ...movement.map((point) => point.cumulative))
   const movementRange = Math.max(1, maxMovement - minMovement)
@@ -59,7 +60,7 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
       <SectionTitle
         id="flow-trend-title"
         title="Evolução de entradas e saídas"
-        subtitle={`Movimentações por semana · ${monthLabel}`}
+        subtitle={`Movimentações por semana · ${monthLabel} · ${currency ?? 'moeda não informada'}`}
       />
 
       {!hasData ? (
@@ -93,11 +94,11 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
                         className="h-full rounded-full bg-inflow"
                         style={{ width: `${(week.inflow / maxValue) * 100}%` }}
                         role="img"
-                        aria-label={`Entradas: ${formatBRL(week.inflow)}`}
+                        aria-label={`Entradas: ${formatCurrency(week.inflow, currency)}`}
                       />
                     </div>
                     <span className="w-24 shrink-0 text-right text-xs font-semibold tabular-nums">
-                      {formatBRL(week.inflow)}
+                      {formatCurrency(week.inflow, currency)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -107,11 +108,11 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
                         className="h-full rounded-full bg-outflow"
                         style={{ width: `${(week.outflow / maxValue) * 100}%` }}
                         role="img"
-                        aria-label={`Saídas: ${formatBRL(week.outflow)}`}
+                        aria-label={`Saídas: ${formatCurrency(week.outflow, currency)}`}
                       />
                     </div>
                     <span className="w-24 shrink-0 text-right text-xs font-semibold tabular-nums">
-                      {formatBRL(week.outflow)}
+                      {formatCurrency(week.outflow, currency)}
                     </span>
                   </div>
                 </div>
@@ -134,14 +135,14 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
               </p>
             </div>
             <p className="text-sm font-semibold tabular-nums">
-              {formatBRL(movement[movement.length - 1].cumulative)}
+              {formatCurrency(movement[movement.length - 1].cumulative, currency)}
             </p>
           </div>
           <svg
             viewBox="0 0 600 140"
             className="h-36 w-full overflow-visible"
             role="img"
-            aria-label={`Movimentação líquida acumulada: ${formatBRL(movement[movement.length - 1].cumulative)} entre ${formatShortDate(firstMovementDate!)} e ${formatShortDate(lastMovementDate!)}. Não representa saldo bancário.`}
+            aria-label={`Movimentação líquida acumulada: ${formatCurrency(movement[movement.length - 1].cumulative, currency)} entre ${formatShortDate(firstMovementDate!)} e ${formatShortDate(lastMovementDate!)}. Não representa saldo bancário.`}
           >
             <line
               x1="12"
@@ -179,4 +180,10 @@ export function FlowTrend({ data }: { data: SandboxSnapshot }) {
       )}
     </Surface>
   )
+}
+
+export function FlowTrend({ data }: { data: SandboxSnapshot }) {
+  const currencies = [...new Set(data.transactions.map((transaction) => transaction.currency ?? null))]
+  if (currencies.length === 0) currencies.push(null)
+  return <div className="space-y-6">{currencies.map((currency) => <FlowTrendForCurrency key={currency ?? 'unknown'} data={data} currency={currency} />)}</div>
 }

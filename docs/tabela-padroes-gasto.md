@@ -1,21 +1,25 @@
-# Tabela de 3 padrões de gasto (dados de exemplo fictícios)
+# Tabela de padrões de gasto — exemplo sintético
 
-> Dados de exemplo da Plaid Sandbox. Valor positivo = saída de dinheiro (débito); valor negativo = entrada.
+> **Exemplo didático, não extraído da Plaid Sandbox nem de uma conta bancária real.** As transações abaixo foram criadas manualmente apenas para demonstrar os agrupamentos por categoria, período e conta. Os resultados não representam dados reais do dashboard.
 
-## Dados base (transações fictícias)
+Na convenção de valores usada neste exemplo (compatível com a Plaid), valor positivo representa saída e valor negativo representa entrada. Todos os valores estão em USD.
+
+## Dados-base fictícios
 
 | Data | Descrição | Categoria | Conta | Valor (USD) |
 |---|---|---|---|---:|
 | 2026-10-01 | Supermercado X | Alimentação | Conta Corrente | 120.00 |
 | 2026-10-03 | Farmácia Y | Saúde | Conta Corrente | 45.50 |
-| 2026-10-05 | Uber | Transporte | Cartão Crédito | 18.90 |
-| 2026-10-08 | Restaurante Z | Alimentação | Cartão Crédito | 62.00 |
+| 2026-10-05 | Uber | Transporte | Cartão de Crédito | 18.90 |
+| 2026-10-08 | Restaurante Z | Alimentação | Cartão de Crédito | 62.00 |
 | 2026-10-12 | Aluguel | Moradia | Conta Corrente | 900.00 |
-| 2026-10-15 | Cinema | Lazer | Cartão Crédito | 35.00 |
-| 2026-10-18 | Gasolina | Transporte | Cartão Crédito | 70.00 |
+| 2026-10-15 | Cinema | Lazer | Cartão de Crédito | 35.00 |
+| 2026-10-18 | Gasolina | Transporte | Cartão de Crédito | 70.00 |
 | 2026-10-22 | Salário | Renda | Conta Corrente | -2500.00 |
 
-## Padrão 1 — Gasto por categoria
+## Padrão 1 — gasto por categoria
+
+O total de saídas do exemplo é **US$ 1.251,40**. A participação percentual é calculada dividindo o total da categoria pelo total de saídas.
 
 | Categoria | Total gasto (USD) | % do gasto total |
 |---|---:|---:|
@@ -24,11 +28,15 @@
 | Transporte | 88.90 | 7.1% |
 | Saúde | 45.50 | 3.6% |
 | Lazer | 35.00 | 2.8% |
-| **Total gasto** | **1251.40** | **100.0%** |
+| **Total gasto** | **1251.40** | **100.0%*** |
 
-Observação: salário é entrada (valor negativo), por isso não entra no denominador dos gastos. Os percentuais são calculados sobre a soma das despesas (US$ 1.251,40), excluindo a renda.
+*A soma dos percentuais individuais pode resultar em 99,9% devido ao arredondamento para uma casa decimal.*
 
-## Padrão 2 — Gasto por período (semana)
+O salário é uma entrada (valor negativo) e, portanto, não compõe o total de gastos.
+
+## Padrão 2 — gasto por período
+
+Os valores são agrupados pelos intervalos de dias indicados. Períodos sem transações de saída também são exibidos com zero.
 
 | Período | Total gasto (USD) |
 |---|---:|
@@ -36,25 +44,24 @@ Observação: salário é entrada (valor negativo), por isso não entra no denom
 | Semana 2 (08–14) | 962.00 |
 | Semana 3 (15–21) | 105.00 |
 | Semana 4 (22–31) | 0.00 |
-| **Total gasto** | **1251.40** |
+| **Total** | **1251.40** |
 
-A compra de gasolina, em 18/10, pertence à semana 3 (15–21), junto com o cinema (15/10).
-
-## Padrão 3 — Gasto por conta
+## Padrão 3 — gasto por conta
 
 | Conta | Total gasto (USD) | Total recebido (USD) |
 |---|---:|---:|
 | Conta Corrente | 1065.50 | 2500.00 |
-| Cartão Crédito | 185.90 | 0.00 |
+| Cartão de Crédito | 185.90 | 0.00 |
 | **Total** | **1251.40** | **2500.00** |
 
-## Como reproduzir no seu assistente
+## Como reproduzir no assistente
 
-1. Consulte as transações do Item de Sandbox pelo MCP da Plaid.
-2. Agrupe por categoria, semana e conta (account_id).
-3. Trate valor positivo como saída e valor negativo como entrada.
-4. Para cartão, rotule o saldo como "fatura em aberto", não como saldo de conta.
+1. Consulte as transações do Item de sandbox da Plaid.
+2. Agrupe as transações por categoria, semana e conta.
+3. Considere valores positivos como saídas e valores negativos como entradas.
+4. Exclua transferências internas e pagamentos de dívida dos indicadores de consumo, para evitar dupla contagem.
+5. Identifique separadamente a fatura de cartão; ela representa dívida, não dinheiro disponível.
 
-## Observação sobre cartão
+## Limitação deste exemplo
 
-O saldo de cartão de crédito representa dívida (valor devido), não dinheiro disponível. Mostre limite e crédito disponível separadamente.
+Esta tabela demonstra a lógica dos agrupamentos com dados inventados. Para apresentar padrões reais do aplicativo, é necessário executar os mesmos cálculos sobre as transações efetivamente retornadas pela Plaid Sandbox, no período selecionado. Não use estes números como evidência de integração ou de dados reais.

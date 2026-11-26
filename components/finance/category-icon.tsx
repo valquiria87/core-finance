@@ -2,6 +2,7 @@ import {
   ArrowLeftRight,
   Car,
   CreditCard,
+  CircleHelp,
   Film,
   HeartPulse,
   House,
@@ -24,6 +25,7 @@ const ICONS: Record<CategoryId, LucideIcon> = {
   income: Wallet,
   transfer: ArrowLeftRight,
   debt: CreditCard,
+  other: CircleHelp,
 }
 
 export function CategoryIcon({ id, size = 'md' }: { id: CategoryId; size?: 'sm' | 'md' }) {

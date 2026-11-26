@@ -20,11 +20,11 @@ export function Header() {
   const live = data?.mode === 'live'
 
   return (
-    <header className="flex items-center gap-3 py-4 md:py-6">
-      <Monogram />
+    <header className="flex min-w-0 items-center gap-3 overflow-hidden py-4 md:py-6">
+      <div className="shrink-0"><Monogram /></div>
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-xl font-bold tracking-tight md:text-2xl">Core Finance</h1>
-        <p className="truncate text-xs text-text-muted md:text-sm">
+        <p className="w-full min-w-0 max-w-full whitespace-normal break-words text-xs leading-relaxed text-text-muted md:text-sm">
           O núcleo inteligente para suas conexões de Open Finance
         </p>
       </div>
@@ -36,7 +36,7 @@ export function Header() {
         type="button"
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
         aria-label={isDark ? 'Ativar tema claro' : 'Ativar tema escuro'}
-        className="flex size-10 items-center justify-center rounded-full border bg-surface text-text-muted transition-colors hover:text-foreground"
+        className="flex size-10 shrink-0 items-center justify-center rounded-full border bg-surface text-text-muted transition-colors hover:text-foreground"
       >
         {isDark ? <Sun className="size-[18px]" aria-hidden="true" /> : <Moon className="size-[18px]" aria-hidden="true" />}
       </button>

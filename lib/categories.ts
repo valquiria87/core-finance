@@ -11,6 +11,7 @@ export const CATEGORIES: Record<CategoryId, CategoryMeta> = {
   housing: { label: 'Moradia', color: '#ff6b55' },
   food: { label: 'Alimentação', color: '#fbbf24' },
   shopping: { label: 'Compras', color: '#38bdf8' },
+  other: { label: 'Outros / não classificados', color: '#94a3b8' },
   transport: { label: 'Transporte', color: '#2dd4bf' },
   leisure: { label: 'Lazer', color: '#fb7185' },
   health: { label: 'Saúde', color: '#a3e635' },

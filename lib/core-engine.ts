@@ -1,24 +1,22 @@
 
 import { categoryLabel } from './categories'
 import {
-  accountTotals,
-  consumptionTotal,
+  accountTotalsByCurrency,
+  consumptionByCurrency,
   filterTransactions,
-  filteredConsumptionTotal,
   groupByDay,
   monthKey,
-  periodFlows,
+  periodFlowsByCurrency,
   spendingByAccount,
-  spendingByCategory,
+  spendingByCategoryAndCurrency,
   spendingByWeek,
 } from './finance'
 import {
   formatPercent,
   formatShortDate,
-  formatBRL,
-  formatBRLOrMissing,
+  formatCurrency,
 } from './format'
-import type { CategoryId, ChatBlock, SandboxSnapshot } from './types'
+import type { AccountType, CategoryId, ChatBlock, SandboxSnapshot } from './types'
 
 /**
  * Motor de respostas do Core.
@@ -33,6 +31,25 @@ const normalize = (s: string) =>
 
 const has = (text: string, ...words: string[]) =>
   words.some((word) => text.includes(word))
+
+function totalsByCurrency(items: { currency?: string | null; amount: number }[]) {
+  const totals = new Map<string, number>()
+  for (const item of items) {
+    const currency = item.currency ?? ''
+    totals.set(currency, (totals.get(currency) ?? 0) + item.amount)
+  }
+  return [...totals].map(([currency, amount]) => ({ currency: currency || null, amount }))
+}
+
+function formatTotals(totals: { currency: string | null; amount: number }[]) {
+  return totals.length
+    ? totals.map(({ currency, amount }) => formatCurrency(amount, currency)).join('; ')
+    : formatCurrency(0, null)
+}
+
+function formatCurrencyOrMissing(value: number | null, currency?: string | null) {
+  return value == null ? 'Não informado' : formatCurrency(value, currency)
+}
 
 const MONTHS = [
   'janeiro',
@@ -146,7 +163,10 @@ function filteredSpendAnswer(
       transaction.category !== 'debt',
   )
 
-  const total = filteredConsumptionTotal(data.transactions, filters)
+  const totals = totalsByCurrency(matches.map((transaction) => ({
+    currency: transaction.currency,
+    amount: transaction.amount,
+  })))
 
   if (matches.length === 0) {
     return [
@@ -170,7 +190,7 @@ function filteredSpendAnswer(
   return [
     {
       type: 'text',
-      text: `Em ${monthName(key)} de ${year}, encontrei ${matches.length} transação(ões) correspondente(s) a ${label}. Total confirmado: ${formatBRL(total)}.`,
+        text: `Em ${monthName(key)} de ${year}, encontrei ${matches.length} transação(ões) correspondente(s) a ${label}. Total confirmado: ${formatTotals(totals)}.`,
     },
     {
       type: 'table',
@@ -183,26 +203,29 @@ function filteredSpendAnswer(
       rows: matches.map((transaction) => ({
         data: formatShortDate(transaction.date),
         estabelecimento: transaction.merchant,
-        valor: formatBRL(transaction.amount),
+        valor: formatCurrency(transaction.amount, transaction.currency),
       })),
       tone: matches.map(() => ({ valor: 'outflow' })),
     },
   ]
 }
 
-const typeLabel = {
+const typeLabel: Record<AccountType, string> = {
   checking: 'Conta corrente',
   savings: 'Poupança',
   credit: 'Cartão de crédito',
+  loan: 'Empréstimo',
+  investment: 'Investimento',
+  other: 'Outra conta',
 }
 
 function balances(data: SandboxSnapshot): ChatBlock[] {
-  const { cash, debt } = accountTotals(data.accounts)
+  const { cash, debt, investments } = accountTotalsByCurrency(data.accounts)
 
   return [
     {
       type: 'text',
-      text: `Você tem ${formatBRL(cash)} em contas. Separadamente, há ${formatBRL(debt)} em faturas de cartão em aberto — isso é valor devido, não dinheiro disponível.`,
+      text: `Você tem ${formatTotals(cash)} em contas de depósito. Separadamente, há ${formatTotals(debt)} em dívidas (cartões e empréstimos) e ${formatTotals(investments)} em investimentos. Dívidas não são dinheiro disponível; investimentos são apresentados à parte.`,
     },
     {
       type: 'table',
@@ -217,19 +240,25 @@ function balances(data: SandboxSnapshot): ChatBlock[] {
         conta: `${account.name} ••${account.mask}`,
         tipo: typeLabel[account.type],
         valor:
-          account.type === 'credit'
-            ? `${formatBRLOrMissing(account.current)} devido`
-            : formatBRLOrMissing(account.current),
+          account.type === 'credit' || account.type === 'loan'
+            ? `${formatCurrencyOrMissing(account.current, account.currency)} devido`
+            : formatCurrencyOrMissing(account.current, account.currency),
         extra:
           account.type === 'credit'
-            ? `Limite: ${formatBRLOrMissing(account.limit)}`
-            : formatBRLOrMissing(account.available),
+            ? `Limite: ${formatCurrencyOrMissing(account.limit, account.currency)}`
+            : account.type === 'checking' || account.type === 'savings'
+              ? formatCurrencyOrMissing(account.available, account.currency)
+              : '—',
       })),
       tone: data.accounts.map((account) => ({
-        valor: account.type === 'credit' ? 'outflow' : 'inflow',
+        valor: account.type === 'credit' || account.type === 'loan'
+          ? 'outflow'
+          : account.type === 'investment' || account.type === 'other'
+            ? 'muted'
+            : 'inflow',
       })),
       footnote:
-        'Cartões mostram fatura em aberto / valor devido, nunca saldo disponível.',
+        'Cartões e empréstimos mostram valores devidos; investimentos e outras contas não entram no dinheiro disponível.',
     },
   ]
 }
@@ -264,8 +293,8 @@ function recentTransactions(data: SandboxSnapshot): ChatBlock[] {
         conta: name(transaction.accountId),
         valor:
           transaction.amount > 0
-            ? `− ${formatBRL(transaction.amount)}`
-            : `+ ${formatBRL(-transaction.amount)}`,
+            ? `− ${formatCurrency(transaction.amount, transaction.currency)}`
+            : `+ ${formatCurrency(-transaction.amount, transaction.currency)}`,
       })),
       tone: recent.map((transaction) => ({
         valor: transaction.amount > 0 ? 'outflow' : 'inflow',
@@ -278,19 +307,28 @@ function categoryTable(
   data: SandboxSnapshot,
   key: string,
 ): ChatBlock {
-  const slices = spendingByCategory(data.transactions, key)
+  const slices = spendingByCategoryAndCurrency(data.transactions, key)
+  const counts = new Map<string, number>()
+
+  for (const transaction of data.transactions) {
+    if (!transaction.date.startsWith(key) || transaction.amount <= 0) continue
+    const countKey = `${transaction.currency ?? ''}:${transaction.category}`
+    counts.set(countKey, (counts.get(countKey) ?? 0) + 1)
+  }
 
   return {
     type: 'table',
     title: `Padrão 1 · Gastos por categoria (${monthName(key)})`,
     columns: [
       { key: 'cat', label: 'Categoria' },
-      { key: 'valor', label: 'Valor', align: 'right' },
+      { key: 'qtd', label: 'Transações', align: 'right' },
+      { key: 'valor', label: 'Total', align: 'right' },
       { key: 'pct', label: '%', align: 'right' },
     ],
     rows: slices.map((slice) => ({
       cat: categoryLabel(slice.id),
-      valor: formatBRL(slice.value),
+      qtd: String(counts.get(`${slice.currency ?? ''}:${slice.id}`) ?? 0),
+      valor: formatCurrency(slice.value, slice.currency),
       pct: formatPercent(slice.percent),
     })),
     tone: slices.map(
@@ -307,7 +345,15 @@ function periodTable(
   data: SandboxSnapshot,
   key: string,
 ): ChatBlock {
-  const weeks = spendingByWeek(data.transactions, key)
+  const currencies = [...new Set(data.transactions
+    .filter((transaction) => transaction.date.startsWith(key))
+    .map((transaction) => transaction.currency ?? null))]
+  const weeks = currencies.flatMap((currency) =>
+    spendingByWeek(
+      data.transactions.filter((transaction) => (transaction.currency ?? null) === currency),
+      key,
+    ).map((week) => ({ ...week, currency })),
+  )
 
   return {
     type: 'table',
@@ -320,7 +366,7 @@ function periodTable(
     rows: weeks.map((week) => ({
       periodo: week.label,
       qtd: String(week.count),
-      valor: formatBRL(week.value),
+      valor: formatCurrency(week.value, week.currency),
     })),
     tone: weeks.map(() => ({ valor: 'outflow' })),
   }
@@ -330,11 +376,14 @@ function accountTable(
   data: SandboxSnapshot,
   key: string,
 ): ChatBlock {
-  const rows = spendingByAccount(
-    data.transactions,
+  const currencies = [...new Set(data.transactions
+    .filter((transaction) => transaction.date.startsWith(key))
+    .map((transaction) => transaction.currency ?? null))]
+  const rows = currencies.flatMap((currency) => spendingByAccount(
+    data.transactions.filter((transaction) => (transaction.currency ?? null) === currency),
     data.accounts,
     key,
-  )
+  ).map((row) => ({ ...row, currency })))
 
   return {
     type: 'table',
@@ -347,7 +396,7 @@ function accountTable(
     rows: rows.map((row) => ({
       conta: `${row.account.name} ••${row.account.mask}`,
       qtd: String(row.count),
-      valor: formatBRL(row.value),
+      valor: formatCurrency(row.value, row.currency),
     })),
     tone: rows.map(() => ({ valor: 'outflow' })),
   }
@@ -357,16 +406,26 @@ function monthSpend(
   data: SandboxSnapshot,
   key: string,
 ): ChatBlock[] {
-  const consumption = consumptionTotal(data.transactions, key)
-  const { inflow } = periodFlows(data.transactions, key)
-  const top = spendingByCategory(data.transactions, key).find(
-    (slice) => !slice.nonConsumption,
-  )
+  const consumption = consumptionByCurrency(data.transactions, key)
+  const { inflow } = periodFlowsByCurrency(data.transactions, key)
+  const slices = spendingByCategoryAndCurrency(data.transactions, key)
+  const currencies = [...new Set([
+    ...consumption.map((item) => item.currency),
+    ...inflow.map((item) => item.currency),
+    ...slices.filter((slice) => !slice.nonConsumption).map((slice) => slice.currency ?? null),
+  ])]
+  const summary = (currencies.length ? currencies : [null]).map((currency) => {
+    const spent = consumption.find((item) => item.currency === currency)?.amount ?? 0
+    const income = inflow.find((item) => item.currency === currency)?.amount ?? 0
+    const top = slices.find((slice) => !slice.nonConsumption && slice.currency === currency)
+    const currencyLabel = currency ?? 'Moeda não informada'
+    return `${currencyLabel}: ${formatCurrency(spent, currency)} em consumo, contra ${formatCurrency(income, currency)} de entradas. Maior categoria: ${top?.label ?? '—'} (${top ? formatCurrency(top.value, currency) : '—'})`
+  }).join('; ')
 
   return [
     {
       type: 'text',
-      text: `Em ${monthName(key)} você gastou ${formatBRL(consumption)} em consumo, contra ${formatBRL(inflow)} de entradas. A maior categoria foi ${top?.label ?? '—'} (${top ? formatBRL(top.value) : '—'}). Transferências e pagamentos de fatura ficaram de fora, porque não são consumo.`,
+      text: `Em ${monthName(key)}, ${summary}. Transferências e pagamentos de fatura ficaram de fora, porque não são consumo. Para buscar oportunidades de economia, comece revisando os lançamentos da maior categoria de consumo; isso indica onde investigar, não uma economia garantida.`,
     },
     periodTable(data, key),
   ]
@@ -391,11 +450,11 @@ const CONCEPTS: { match: string[]; text: string }[] = [
   },
   {
   match: ['mcp'],
-  text: 'MCP (Model Context Protocol) é um padrão de comunicação entre aplicações de IA e ferramentas externas. Neste projeto, o MCP da Pluggy permite consultar a documentação de Open Finance, enquanto a integração com a Pluggy Sandbox fornece as contas, os saldos e as transações fictícias utilizadas pelo dashboard e pelo assistente financeiro.',
+  text: 'MCP (Model Context Protocol) é um padrão de comunicação entre aplicações de IA e ferramentas externas. Neste projeto, o MCP da Pluggy é usado para consultar a documentação de Open Finance. Já as contas, os saldos e as transações fictícias exibidos pelo dashboard e pelo assistente financeiro vêm da Plaid Sandbox. A integração com a Pluggy Sandbox é independente e não alimenta a tela atual.',
 },
 ]
 
-function answerForMonth(
+export function answer(
   question: string,
   data: SandboxSnapshot,
 ): ChatBlock[] {
@@ -467,6 +526,13 @@ function answerForMonth(
     'gasto',
     'gastos',
     'despesa',
+    'analise',
+    'movimentacoes',
+    'principais',
+    'oportunidade',
+    'economia',
+    'entradas',
+    'entrada',
   )
 
   const category = requestedCategory(question)
@@ -481,6 +547,27 @@ function answerForMonth(
   }
 
   if (isSpendingQuestion) {
+    const requestsFullAnalysis = has(
+      q,
+      'analise',
+      'movimentacoes',
+      'principais',
+      'oportunidade',
+      'economia',
+      'entradas',
+      'entrada',
+      'resumo',
+    )
+
+    if (requestsFullAnalysis) {
+      return [
+        monthSpend(data, key)[0],
+        categoryTable(data, key),
+        periodTable(data, key),
+        accountTable(data, key),
+      ]
+    }
+
     return monthSpend(data, key)
   }
 
@@ -493,12 +580,12 @@ function answerForMonth(
   }
 
   if (has(q, 'divida', 'fatura', 'cartao', 'devo')) {
-    const { debt } = accountTotals(data.accounts)
+    const { debt } = accountTotalsByCurrency(data.accounts)
 
     return [
       {
         type: 'text',
-        text: `Suas faturas em aberto somam ${formatBRL(debt)}. Isso é valor devido — não entra como dinheiro disponível.`,
+        text: `Suas faturas em aberto somam ${formatTotals(debt)}. Isso é valor devido — não entra como dinheiro disponível.`,
       },
       balances(data)[1],
     ]
@@ -518,50 +605,5 @@ function answerForMonth(
       type: 'text',
       text: 'Ainda não sei responder isso com os dados de teste. Tente perguntar sobre saldo, gastos do mês, gastos por categoria ou “o que é um Item na Pluggy?”.',
     },
-  ]
-}
-/** Se a pergunta pede o mês corrente sem movimentações, explicita o último mês disponível. */
-export function answer(question: string, data: SandboxSnapshot): ChatBlock[] {
-  const q = normalize(question)
-  const asksCurrentMonth = has(
-    q,
-    'este mes',
-    'neste mes',
-    'mes atual',
-    'no mes atual',
-    'this month',
-  )
-
-  if (!asksCurrentMonth) return answerForMonth(question, data)
-
-  const currentMonth = monthKey(data.asOf)
-  const hasCurrentMonthTransactions = data.transactions.some(
-    (transaction) => monthKey(transaction.date) === currentMonth,
-  )
-
-  if (hasCurrentMonthTransactions) return answerForMonth(question, data)
-
-  const latestDate = data.transactions.reduce(
-    (latest, transaction) =>
-      transaction.date > latest ? transaction.date : latest,
-    '',
-  )
-
-  if (!latestDate) {
-    return [{
-      type: 'text',
-      text: 'Em ' + monthName(currentMonth) + ' ainda não há movimentações nem meses anteriores com dados disponíveis.',
-    }]
-  }
-
-  const lastMonth = monthKey(latestDate)
-  if (lastMonth === currentMonth) return answerForMonth(question, data)
-
-  return [
-    {
-      type: 'text',
-      text: 'Em ' + monthName(currentMonth) + ' ainda não há movimentações. O último mês com dados é ' + monthName(lastMonth) + ':',
-    },
-    ...answerForMonth(question, data),
   ]
 }

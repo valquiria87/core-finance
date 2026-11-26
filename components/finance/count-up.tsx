@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { formatBRL } from '@/lib/format'
+import { formatCurrency } from '@/lib/format'
 
-export function CountUp({ value, duration = 900 }: { value: number; duration?: number }) {
+export function CountUp({ value, currency, duration = 900 }: { value: number; currency?: string | null; duration?: number }) {
   const [display, setDisplay] = useState(value)
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export function CountUp({ value, duration = 900 }: { value: number; duration?: n
 
   return (
     <>
-      <span aria-hidden="true">{formatBRL(display)}</span>
-<span className="sr-only">{formatBRL(value)}</span>
+      <span aria-hidden="true">{formatCurrency(display, currency)}</span>
+      <span className="sr-only">{formatCurrency(value, currency)}</span>
     </>
   )
 }

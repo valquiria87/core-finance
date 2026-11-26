@@ -1,13 +1,15 @@
-import { ArrowUpRight, CreditCard, Landmark } from 'lucide-react'
+import { ArrowUpRight, ChartLine, CreditCard, Landmark } from 'lucide-react'
 import { CountUp } from '@/components/finance/count-up'
 import { Sparkline } from '@/components/finance/sparkline'
-import { accountTotals, variation } from '@/lib/finance'
+import { accountTotalsByCurrency, variation } from '@/lib/finance'
+import { formatCurrency } from '@/lib/format'
 import { formatPercent } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 
 export function HeroCard({ data }: { data: SandboxSnapshot }) {
-  const { cash, debt } = accountTotals(data.accounts)
-  const credit = data.accounts.filter((a) => a.type === 'credit')
+  const { cash, debt, investments } = accountTotalsByCurrency(data.accounts)
+  const debtAccounts = data.accounts.filter((a) => a.type === 'credit' || a.type === 'loan')
+  const investmentAccounts = data.accounts.filter((a) => a.type === 'investment')
   const history = data.balanceHistory
 
   const hasHistory = history.length >= 2
@@ -16,10 +18,10 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
     : null
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+    <div className="grid w-full min-w-0 max-w-full gap-4 lg:grid-cols-[1.5fr_1fr_1fr] [&>*]:min-w-0">
       <section
         aria-labelledby="hero-cash"
-        className="animate-fade-up relative overflow-hidden rounded-3xl border p-6 md:p-8"
+        className="animate-fade-up relative w-full min-w-0 max-w-full overflow-hidden rounded-3xl border p-4 sm:p-6 md:p-8"
         style={{
           background:
             'radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--coral) 16%, var(--surface)) 0%, var(--surface) 45%, color-mix(in oklab, var(--inflow) 8%, var(--surface)) 100%)',
@@ -30,10 +32,10 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <h2 id="hero-cash">Dinheiro em contas</h2>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+        <div className="mt-4 flex min-w-0 flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div className="min-w-0">
-            <p className="text-3xl font-extrabold tracking-tight tabular-nums sm:text-4xl md:text-5xl">
-              <CountUp value={cash} />
+            <p className="break-words text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl md:text-5xl">
+              {cash.length === 1 ? <CountUp value={cash[0].amount} currency={cash[0].currency} /> : cash.length ? <span className="space-y-1">{cash.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
             </p>
 
             {change != null && (
@@ -52,7 +54,7 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
               label="Evolução do saldo em contas"
             />
           ) : (
-            <div className="max-w-48 text-left text-xs text-text-muted sm:text-right">
+            <div className="w-full max-w-48 text-left text-xs text-text-muted sm:text-right">
               <p>Histórico de saldo não fornecido pela instituição.</p>
               <a
                 href="#flow-trend-title"
@@ -64,14 +66,14 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           )}
         </div>
 
-        <p className="mt-6 text-xs text-text-muted">
-          Soma de conta corrente e poupança. Faturas de cartão ficam separadas ao lado.
+        <p className="mt-6 break-words text-xs text-text-muted">
+          Soma apenas de contas de depósito (corrente e poupança). Dívidas e investimentos ficam separados.
         </p>
       </section>
 
       <section
         aria-labelledby="hero-debt"
-        className="animate-fade-up flex flex-col rounded-3xl border border-coral/30 bg-coral/[0.07] p-6 md:p-8"
+        className="animate-fade-up flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-3xl border border-coral/30 bg-coral/[0.07] p-4 sm:p-6 md:p-8"
         style={{ animationDelay: '80ms' }}
       >
         <div className="flex items-center gap-2 text-sm font-medium text-coral">
@@ -79,30 +81,60 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <h2 id="hero-debt">Dívidas</h2>
         </div>
 
-        <p className="mt-4 text-3xl font-bold tracking-tight text-coral tabular-nums md:text-4xl">
-          <CountUp value={debt} />
+        <p className="mt-4 break-words text-2xl font-bold tracking-tight text-coral tabular-nums sm:text-3xl md:text-4xl">
+          {debt.length === 1 ? <CountUp value={debt[0].amount} currency={debt[0].currency} /> : debt.length ? <span className="space-y-1">{debt.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
         </p>
 
         <p className="mt-1 text-xs font-medium text-text-muted">
-          Fatura em aberto / valor devido
+          Faturas de cartão e saldos de empréstimos
         </p>
 
         <ul className="mt-auto space-y-2 pt-6">
-          {credit.map((account) => (
+          {debtAccounts.map((account) => (
             <li
               key={account.id}
-              className="flex items-center justify-between gap-3 text-sm"
+              className="flex min-w-0 items-start justify-between gap-2 text-xs sm:text-sm"
             >
-              <span className="truncate text-text-muted">
-                {account.name} ••{account.mask}
+              <span className="min-w-0 flex-1 truncate text-text-muted">
+                {account.type === 'loan' ? 'Empréstimo · ' : 'Cartão · '}{account.name} ••{account.mask}
               </span>
 
-              <span className="font-semibold tabular-nums">
+              <span className="max-w-[45%] shrink-0 break-words text-right font-semibold tabular-nums">
                 {account.current == null ? (
                   <span className="text-text-muted">Não informado</span>
                 ) : (
-                  <CountUp value={account.current} />
+                  <CountUp value={account.current} currency={account.currency} />
                 )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section
+        aria-labelledby="hero-investments"
+        className="animate-fade-up flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-3xl border border-inflow/30 bg-inflow/[0.06] p-4 sm:p-6 md:p-8"
+        style={{ animationDelay: '160ms' }}
+      >
+        <div className="flex items-center gap-2 text-sm font-medium text-text-muted">
+          <ChartLine className="size-4" aria-hidden="true" />
+          <h2 id="hero-investments">Investimentos</h2>
+        </div>
+
+        <p className="mt-4 break-words text-2xl font-bold tracking-tight tabular-nums sm:text-3xl md:text-4xl">
+          {investments.length === 1 ? <CountUp value={investments[0].amount} currency={investments[0].currency} /> : investments.length ? <span className="space-y-1">{investments.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
+        </p>
+
+        <p className="mt-1 text-xs font-medium text-text-muted">
+          Patrimônio investido, apresentado separadamente do dinheiro disponível.
+        </p>
+
+        <ul className="mt-auto space-y-2 pt-6">
+          {investmentAccounts.map((account) => (
+            <li key={account.id} className="flex min-w-0 items-start justify-between gap-2 text-xs sm:text-sm">
+              <span className="min-w-0 flex-1 truncate text-text-muted">{account.name}</span>
+              <span className="max-w-[45%] shrink-0 break-words text-right font-semibold tabular-nums">
+                {account.current == null ? 'Não informado' : <CountUp value={account.current} currency={account.currency} />}
               </span>
             </li>
           ))}

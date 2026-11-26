@@ -29,21 +29,48 @@ export function inMonth(txs: Transaction[], key: string) {
 }
 
 export function accountTotals(accounts: Account[]) {
-  const deposit = accounts.filter((a) => a.type !== 'credit')
-  const credit = accounts.filter((a) => a.type === 'credit')
+  const deposits = accounts.filter((a) => a.type === 'checking' || a.type === 'savings')
+  const debts = accounts.filter((a) => a.type === 'credit' || a.type === 'loan')
+  const investments = accounts.filter((a) => a.type === 'investment')
   return {
-    cash: deposit.reduce((s, a) => s + (a.current ?? 0), 0),
-    debt: credit.reduce((s, a) => s + (a.current ?? 0), 0),
+    cash: deposits.reduce((s, a) => s + (a.current ?? 0), 0),
+    debt: debts.reduce((s, a) => s + (a.current ?? 0), 0),
+    investments: investments.reduce((s, a) => s + (a.current ?? 0), 0),
   }
 }
 
-/** Entradas e saídas do mês. Transferências internas não contam como saída. */
+export function totalsByCurrency(items: { currency?: string | null; amount: number }[]) {
+  const totals = new Map<string, number>()
+  for (const item of items) {
+    const currency = item.currency ?? ''
+    totals.set(currency, (totals.get(currency) ?? 0) + item.amount)
+  }
+  return [...totals].map(([currency, amount]) => ({
+    currency: currency || null,
+    amount: Math.round((amount + Number.EPSILON) * 100) / 100,
+  }))
+}
+
+export function accountTotalsByCurrency(accounts: Account[]) {
+  return {
+    cash: totalsByCurrency(accounts.filter((a) => (a.type === 'checking' || a.type === 'savings') && a.current != null).map((a) => ({ currency: a.currency, amount: a.current! }))),
+    debt: totalsByCurrency(accounts.filter((a) => (a.type === 'credit' || a.type === 'loan') && a.current != null).map((a) => ({ currency: a.currency, amount: a.current! }))),
+    investments: totalsByCurrency(accounts.filter((a) => a.type === 'investment' && a.current != null).map((a) => ({ currency: a.currency, amount: a.current! }))),
+  }
+}
+
+export function periodFlowsByCurrency(txs: Transaction[], key: string) {
+  const list = inMonth(txs, key).filter((t) => !CATEGORIES[t.category].nonConsumption)
+  const inflow = totalsByCurrency(list.filter(isInflow).map((t) => ({ currency: t.currency, amount: -t.amount })))
+  const outflow = totalsByCurrency(list.filter(isOutflow).map((t) => ({ currency: t.currency, amount: t.amount })))
+  return { inflow, outflow }
+}
+
+/** Entradas e saídas externas do mês; transferências e pagamentos de dívida são excluídos para evitar dupla contagem. */
 export function periodFlows(txs: Transaction[], key: string) {
-  const list = inMonth(txs, key)
+  const list = inMonth(txs, key).filter((t) => !CATEGORIES[t.category].nonConsumption)
   const inflow = list.filter(isInflow).reduce((s, t) => s - t.amount, 0)
-  const outflow = list
-    .filter((t) => isOutflow(t) && t.category !== 'transfer')
-    .reduce((s, t) => s + t.amount, 0)
+  const outflow = list.filter(isOutflow).reduce((s, t) => s + t.amount, 0)
   return { inflow, outflow }
 }
 
@@ -56,6 +83,7 @@ export function variation(current: number, previous: number) {
 export function cumulativeCashFlow(txs: Transaction[]) {
   const daily = new Map<string, number>()
   for (const transaction of txs) {
+    if (CATEGORIES[transaction.category].nonConsumption) continue
     daily.set(
       transaction.date,
       (daily.get(transaction.date) ?? 0) - transaction.amount,
@@ -78,6 +106,29 @@ export interface CategorySlice {
   value: number
   percent: number
   nonConsumption: boolean
+  currency?: string | null
+}
+
+export function spendingByCategoryAndCurrency(txs: Transaction[], key: string): CategorySlice[] {
+  const totals = new Map<string, { id: CategoryId; currency: string | null; value: number }>()
+  for (const t of inMonth(txs, key)) {
+    if (!isOutflow(t)) continue
+    const currency = t.currency ?? null
+    const mapKey = `${currency ?? ''}:${t.category}`
+    const current = totals.get(mapKey)
+    totals.set(mapKey, { id: t.category, currency, value: (current?.value ?? 0) + t.amount })
+  }
+  const currencyTotals = new Map<string, number>()
+  for (const item of totals.values()) currencyTotals.set(item.currency ?? '', (currencyTotals.get(item.currency ?? '') ?? 0) + item.value)
+  return [...totals.values()].map(({ id, currency, value }) => ({
+    id, currency, value, label: CATEGORIES[id].label, color: CATEGORIES[id].color,
+    percent: value / (currencyTotals.get(currency ?? '') || 1) * 100,
+    nonConsumption: Boolean(CATEGORIES[id].nonConsumption),
+  })).sort((a, b) => (a.currency ?? '').localeCompare(b.currency ?? '') || Number(a.nonConsumption) - Number(b.nonConsumption) || b.value - a.value)
+}
+
+export function consumptionByCurrency(txs: Transaction[], key: string) {
+  return totalsByCurrency(inMonth(txs, key).filter((t) => isOutflow(t) && !CATEGORIES[t.category].nonConsumption).map((t) => ({ currency: t.currency, amount: t.amount })))
 }
 
 export function spendingByCategory(txs: Transaction[], key: string): CategorySlice[] {

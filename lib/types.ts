@@ -1,16 +1,17 @@
-export type AccountType = 'checking' | 'savings' | 'credit'
+export type AccountType = 'checking' | 'savings' | 'credit' | 'loan' | 'investment' | 'other'
 
 export interface Account {
   id: string
   name: string
   institution: string
+  currency?: string | null
   type: AccountType
   mask: string
-  /** Conta corrente/poupança: saldo atual. Cartão: fatura em aberto / valor devido. */
+  /** Saldo atual, valor devido de cartão/empréstimo ou valor de investimento, conforme o tipo. */
   current: number | null
   /** Saldo disponível (apenas contas de depósito). */
   available: number | null
-  /** Limite total (apenas cartões). */
+  /** Limite total (apenas cartões de crédito). */
   limit: number | null
 }
 
@@ -18,6 +19,7 @@ export type CategoryId =
   | 'food'
   | 'transport'
   | 'shopping'
+  | 'other'
   | 'leisure'
   | 'housing'
   | 'health'
@@ -30,6 +32,7 @@ export interface Transaction {
   date: string
   merchant: string
   accountId: string
+  currency?: string | null
   category: CategoryId
   /** Regra interna: valor positivo = saída de dinheiro; negativo = entrada. */
   amount: number

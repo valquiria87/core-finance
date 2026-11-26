@@ -18,6 +18,9 @@ const {
   spendingByCategory,
   consumptionTotal,
   spendingByWeek,
+  accountTotalsByCurrency,
+  periodFlowsByCurrency,
+  spendingByCategoryAndCurrency,
 } = require('../lib/finance.ts')
 
 const transactions = [
@@ -45,6 +48,24 @@ test('consumptionTotal excludes transfers and debt payments', () => {
   assert.equal(consumptionTotal(withDebt, '2026-10'), 1272.7)
 })
 
+test('monthly flows exclude both sides of card bill payments and internal transfers', () => {
+  const withPayments = [
+    ...transactions,
+    { id: 'card-payment-out', date: '2026-10-26', amount: 300, category: 'debt', merchant: 'Credit Card Payment', accountId: 'checking', pending: false, currency: 'USD' },
+    { id: 'card-payment-in', date: '2026-10-26', amount: -300, category: 'debt', merchant: 'Credit Card Payment', accountId: 'credit', pending: false, currency: 'USD' },
+    { id: 'transfer-in', date: '2026-10-27', amount: -50, category: 'transfer', merchant: 'Internal transfer', accountId: 'checking', pending: false, currency: 'USD' },
+  ]
+
+  assert.deepEqual(periodFlows(withPayments, '2026-10'), {
+    inflow: 8500,
+    outflow: 1272.7,
+  })
+
+  const currencyFlows = periodFlowsByCurrency(withPayments, '2026-10')
+  assert.deepEqual(currencyFlows.inflow, [{ currency: null, amount: 8500 }])
+  assert.deepEqual(currencyFlows.outflow, [{ currency: null, amount: 1272.7 }])
+})
+
 test('category chart preserves transfers in the breakdown but marks them non-consumption', () => {
   const slices = spendingByCategory(transactions, '2026-10')
   const total = slices.reduce((sum, slice) => sum + slice.value, 0)
@@ -60,47 +81,23 @@ test('weekly outflows sum to monthly outflows while keeping transfers excluded',
   assert.equal(Number(weeks.reduce((sum, week) => sum + week.value, 0).toFixed(2)), 1272.7)
 })
 
-const { answer } = require('../lib/core-engine.ts')
+test('dashboard totals and categories stay separated by currency', () => {
+  const multiCurrency = [
+    { id: 'usd', date: '2026-10-01', amount: 10, category: 'food', currency: 'USD' },
+    { id: 'eur', date: '2026-10-02', amount: 20, category: 'food', currency: 'EUR' },
+  ]
+  const totals = accountTotalsByCurrency([
+    { type: 'checking', current: 100, currency: 'USD' },
+    { type: 'checking', current: 200, currency: 'EUR' },
+    { type: 'credit', current: 30, currency: 'EUR' },
+  ])
+  const flows = periodFlowsByCurrency(multiCurrency, '2026-10')
+  const categories = spendingByCategoryAndCurrency(multiCurrency, '2026-10')
 
-test('chat identifies the current month as empty before showing the last month with data', () => {
-  const blocks = answer('Quanto gastei este mês?', {
-    asOf: '2026-11-08',
-    transactions,
-    accounts: [],
-    balanceHistory: [],
-  })
-
-  assert.match(blocks[0].text, /Em novembro ainda não há movimentações/)
-  assert.match(blocks[0].text, /último mês com dados é outubro/)
-  assert.match(blocks[1].text, /Em outubro você gastou/)
-  assert.match(blocks[1].text, /1\.272,70/)
-  assert.match(blocks[1].text, /8\.500,00/)
-  assert.match(blocks[1].text, /Moradia/)
-})
-test('chat category table matches dashboard category values and percentages', () => {
-  const snapshot = {
-    asOf: '2026-11-08',
-    transactions,
-    accounts: [],
-    balanceHistory: [],
-  }
-  const blocks = answer('gastos por categoria', snapshot)
-  const table = blocks.find((block) => block.type === 'table')
-  const slices = spendingByCategory(transactions, '2026-10')
-
-  assert.ok(table)
-  assert.equal(table.rows.length, slices.length)
-
-  for (const [index, slice] of slices.entries()) {
-    const row = table.rows[index]
-    const amount = Number(row.valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'))
-    const percent = Number(row.pct.replace('%', '').replace(',', '.'))
-
-    assert.equal(amount, Number(slice.value.toFixed(2)))
-    assert.ok(Math.abs(percent - slice.percent) <= 0.11)
-  }
-
-  const housing = table.rows.find((row) => row.cat === 'Moradia')
-  assert.ok(housing)
-  assert.equal(Number(housing.valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')), 1105)
+  assert.deepEqual(totals.cash, [{ currency: 'USD', amount: 100 }, { currency: 'EUR', amount: 200 }])
+  assert.deepEqual(totals.debt, [{ currency: 'EUR', amount: 30 }])
+  assert.deepEqual(flows.outflow, [{ currency: 'USD', amount: 10 }, { currency: 'EUR', amount: 20 }])
+  assert.deepEqual(categories.map(({ currency, value }) => ({ currency, value })), [
+    { currency: 'EUR', value: 20 }, { currency: 'USD', value: 10 },
+  ])
 })

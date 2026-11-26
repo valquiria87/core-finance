@@ -4,19 +4,19 @@ import { Donut } from '@/components/finance/donut'
 import { EmptyState } from '@/components/finance/empty-state'
 import { SectionTitle, Surface } from '@/components/finance/surface'
 import {
-  consumptionTotal,
+  consumptionByCurrency,
   latestTransactionDate,
   monthKey,
-  spendingByCategory,
+  spendingByCategoryAndCurrency,
 } from '@/lib/finance'
-import { formatBRL, formatPercent } from '@/lib/format'
+import { formatCurrency, formatPercent } from '@/lib/format'
 import type { SandboxSnapshot } from '@/lib/types'
 
 export function CategorySpending({ data }: { data: SandboxSnapshot }) {
   const key = monthKey(latestTransactionDate(data.transactions, data.asOf))
-  const slices = spendingByCategory(data.transactions, key)
-  const total = slices.reduce((sum, item) => sum + item.value, 0)
-  const consumption = consumptionTotal(data.transactions, key)
+  const slices = spendingByCategoryAndCurrency(data.transactions, key)
+  const currencyKeys = [...new Set(slices.map((item) => item.currency ?? ''))]
+  const consumption = consumptionByCurrency(data.transactions, key)
 
   const monthLabel = new Intl.DateTimeFormat('pt-BR', {
     month: 'long',
@@ -39,9 +39,15 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
           description="Quando houver saídas neste mês, elas aparecem aqui por categoria."
         />
       ) : (
-        <div className="grid items-center gap-6 sm:grid-cols-[auto_1fr]">
+        <div className="space-y-6">
+          {currencyKeys.map((currencyKey) => {
+            const currencySlices = slices.filter((item) => (item.currency ?? '') === currencyKey)
+            const currency = currencySlices[0]?.currency ?? null
+            const total = currencySlices.reduce((sum, item) => sum + item.value, 0)
+            const consumed = consumption.find((item) => (item.currency ?? '') === currencyKey)?.amount ?? 0
+            return <div key={currencyKey || 'unknown'} className="grid items-center gap-6 border-t pt-5 first:border-0 first:pt-0 sm:grid-cols-[auto_1fr]">
           <Donut
-            slices={slices}
+            slices={currencySlices}
             size={196}
             label="Gráfico de rosca dos gastos por categoria"
           >
@@ -49,18 +55,13 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
               Total de saídas
             </span>
             <span className="text-lg font-bold tabular-nums">
-              {formatBRL(total)}
+              {formatCurrency(total, currency)}
             </span>
           </Donut>
 
           <div className="min-w-0">
-            <div className="mb-2 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
-              <span className="min-w-0 flex-1">Categoria</span>
-              <span className="w-20 shrink-0 text-right leading-tight">% das saídas</span>
-              <span className="w-24 shrink-0 text-right">Valor</span>
-            </div>
             <ul className="space-y-2.5">
-              {slices.map((slice) => (
+              {currencySlices.map((slice) => (
                 <li
                   key={slice.id}
                   className="flex items-center gap-3 text-sm"
@@ -70,8 +71,8 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
                   <span
                     className={
                       slice.nonConsumption
-                        ? 'min-w-0 flex-1 truncate text-text-muted'
-                        : 'min-w-0 flex-1 truncate'
+                        ? 'flex-1 truncate text-text-muted'
+                        : 'flex-1 truncate'
                     }
                   >
                     {slice.label}
@@ -80,12 +81,12 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
                     )}
                   </span>
 
-                  <span className="w-20 shrink-0 text-right text-xs text-text-muted tabular-nums">
+                  <span className="text-xs text-text-muted tabular-nums">
                     {formatPercent(slice.percent)}
                   </span>
 
-                  <span className="w-24 shrink-0 text-right font-semibold tabular-nums">
-                    {formatBRL(slice.value)}
+                  <span className="w-24 text-right font-semibold tabular-nums">
+                    {formatCurrency(slice.value, slice.currency)}
                   </span>
                 </li>
               ))}
@@ -93,17 +94,19 @@ export function CategorySpending({ data }: { data: SandboxSnapshot }) {
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-xs">
               <span className="text-text-muted">
-                * não é consumo.
+                * Transferências e pagamento de dívida: não é consumo.
               </span>
 
               <span className="font-semibold tabular-nums">
                 Consumo real:{' '}
                 <span className="text-outflow">
-                  {formatBRL(consumption)}
+                  {formatCurrency(consumed, currency)}
                 </span>
               </span>
             </div>
           </div>
+            </div>
+          })}
         </div>
       )}
     </Surface>

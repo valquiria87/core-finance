@@ -26,7 +26,6 @@ export interface InsightsData {
     avgDailySpend: number
     remainingDays: number
     predictedMonthEnd: number
-    isClosedMonth: boolean
   }
 }
 

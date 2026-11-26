@@ -9,6 +9,15 @@ export function formatBRL(value: number) {
   return brl.format(value).replace(/\u00a0/g, ' ')
 }
 
+export function formatCurrency(value: number, currency?: string | null) {
+  if (!currency) return `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value)} (moeda não informada)`
+  try {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency }).format(value).replace(/\u00a0/g, ' ')
+  } catch {
+    return `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value)} (${currency})`
+  }
+}
+
 export function formatBRLOrMissing(value: number | null | undefined) {
   return value == null ? 'Não informado' : formatBRL(value)
 }

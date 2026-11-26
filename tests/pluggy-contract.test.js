@@ -226,6 +226,15 @@ test('Pluggy adapter maps provider account and transaction fields to the app mod
         status: 'POSTED',
         amount: 42.5,
       },
+      {
+        id: 'tx-unknown',
+        date: '2026-10-16T12:00:00Z',
+        accountId: 'checking-1',
+        category: 'UNMAPPED_CATEGORY',
+        description: 'Unclassified provider transaction',
+        status: 'POSTED',
+        amount: 12,
+      },
     ]],
   )
 
@@ -244,11 +253,12 @@ test('Pluggy adapter maps provider account and transaction fields to the app mod
   assert.equal(snapshot.accounts[1].type, 'credit')
   assert.equal(snapshot.accounts[1].current, 320.75)
   assert.equal(snapshot.accounts[1].limit, 5000)
-  assert.equal(snapshot.transactions.length, 1)
+  assert.equal(snapshot.transactions.length, 2)
   assert.equal(snapshot.transactions[0].id, 'tx-1')
   assert.equal(snapshot.transactions[0].date, '2026-10-15')
   assert.equal(snapshot.transactions[0].merchant, 'Mercado Central')
   assert.equal(snapshot.transactions[0].category, 'food')
   assert.equal(snapshot.transactions[0].pending, false)
+  assert.equal(snapshot.transactions[1].category, 'other')
   assert.deepEqual(snapshot.balanceHistory, [])
 })
