@@ -14,6 +14,10 @@ Core Finance combines a financial dashboard with a Portuguese conversational int
 
 > **Important:** the dashboard and chat use fictional Plaid Sandbox data. Pluggy remains an independent alternative integration. Neither integration uses real bank accounts in this project.
 
+**Live application:** https://core-finance-nine.vercel.app/
+
+**Client scenario:** a person who already manages personal finances through online banking wants a single place to understand available cash, debts, investments, transactions, and spending patterns, then ask questions in Portuguese through a conversational interface.
+
 ## DIO challenge map
 
 | Deliverable | Where to find it |
@@ -76,13 +80,11 @@ Core Finance combines a financial dashboard with a Portuguese conversational int
   "mcpServers": {
     "plaid": {
       "command": "uvx",
-      "args": [
-        "mcp-server-plaid",
-        "--client-id",
-        "YOUR_PLAID_CLIENT_ID",
-        "--secret",
-        "YOUR_PLAID_SECRET"
-      ]
+      "args": ["mcp-server-plaid"],
+      "env": {
+        "PLAID_CLIENT_ID": "${PLAID_CLIENT_ID}",
+        "PLAID_SECRET": "${PLAID_SECRET}"
+      }
     }
   }
 }
@@ -224,12 +226,12 @@ pnpm build
 
 ## Evidence
 
-### Current Core Finance interface (local validation)
+### Historical Core Finance UI evidence
 
-These screenshots were captured from the current local application after the responsive layout and chat table adjustments. They show the dashboard at desktop and mobile sizes, plus deterministic chat answers for spending by category, period, and account. All records are fictional Plaid Sandbox data.
+These screenshots document a local validation snapshot captured before the final data-model hardening. They show the dashboard at desktop and mobile sizes and deterministic chat answers. Treat them as historical UI evidence, not as a screenshot of the currently deployed build. All records are fictional Plaid Sandbox data.
 
-![Current dashboard — desktop](evidencias/app-dashboard-desktop.png)
-![Current dashboard — mobile](evidencias/app-dashboard-mobile.png)
+![Dashboard capture — desktop](evidencias/app-dashboard-desktop.png)
+![Dashboard capture — mobile](evidencias/app-dashboard-mobile.png)
 ![Core chat — spending by category](evidencias/app-core-finance-conversa-gastos-categoria.png)
 ![Core chat — spending by period](evidencias/app-core-finance-gastos-periodo.png)
 ![Core chat — spending by account](evidencias/app-core-finance-gastos-por-conta.png)

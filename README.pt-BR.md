@@ -14,6 +14,10 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 
 > **Importante:** o dashboard e o chat consultam dados fictícios da Plaid Sandbox. Pluggy permanece como integração alternativa independente. Nenhuma das integrações usa contas bancárias reais neste projeto.
 
+**Aplicação publicada:** https://core-finance-nine.vercel.app/
+
+**Cenário do cliente:** uma pessoa que já administra as finanças pelo banco digital quer reunir em um só lugar dinheiro disponível, dívidas, investimentos, transações e padrões de gastos, além de fazer perguntas em português por uma interface conversacional.
+
 ## Mapa do desafio DIO
 
 | Entregável | Onde está |
@@ -76,13 +80,11 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
   "mcpServers": {
     "plaid": {
       "command": "uvx",
-      "args": [
-        "mcp-server-plaid",
-        "--client-id",
-        "YOUR_PLAID_CLIENT_ID",
-        "--secret",
-        "YOUR_PLAID_SECRET"
-      ]
+      "args": ["mcp-server-plaid"],
+      "env": {
+        "PLAID_CLIENT_ID": "${PLAID_CLIENT_ID}",
+        "PLAID_SECRET": "${PLAID_SECRET}"
+      }
     }
   }
 }
@@ -206,12 +208,12 @@ pnpm build
 
 ## Evidências
 
-### Interface atual do Core Finance (validação local)
+### Evidências históricas da interface do Core Finance
 
-As capturas abaixo foram feitas na aplicação local após os ajustes de responsividade do dashboard e das tabelas do chat. Mostram a interface em desktop e mobile e respostas determinísticas para gastos por categoria, período e conta. Todos os registros são dados fictícios da Plaid Sandbox.
+As capturas abaixo documentam uma validação local anterior às últimas correções do modelo de dados. Mostram o dashboard em desktop e mobile e respostas determinísticas do chat. São evidências históricas da interface, não uma captura da versão atualmente publicada. Todos os registros são dados fictícios da Plaid Sandbox.
 
-![Dashboard atual — desktop](evidencias/app-dashboard-desktop.png)
-![Dashboard atual — mobile](evidencias/app-dashboard-mobile.png)
+![Captura do dashboard — desktop](evidencias/app-dashboard-desktop.png)
+![Captura do dashboard — mobile](evidencias/app-dashboard-mobile.png)
 ![Chat Core — gastos por categoria](evidencias/app-core-finance-conversa-gastos-categoria.png)
 ![Chat Core — gastos por período](evidencias/app-core-finance-gastos-periodo.png)
 ![Chat Core — gastos por conta](evidencias/app-core-finance-gastos-por-conta.png)
@@ -268,7 +270,7 @@ MIT — consulte [LICENSE](LICENSE).
 
 ## Atualização do servidor MCP remoto — 25/11/2026
 
-Além do MCP interno descrito acima, foi preparada localmente a Edge Function `supabase/functions/dio-bank-mcp` para atender ao requisito de servidor externo do desafio DIO.
+Além do MCP interno descrito acima, foi preparada localmente a Edge Function opcional `supabase/functions/dio-bank-mcp` como melhoria adicional; o briefing oficial do desafio não exige a publicação de um servidor MCP remoto.
 
 - Transporte MCP Streamable HTTP.
 - Autenticação própria pelo cabeçalho `Authorization: Bearer`, validada com o secret `MCP_TOKEN`.
