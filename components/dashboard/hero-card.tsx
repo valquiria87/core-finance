@@ -18,10 +18,10 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
     : null
 
   return (
-    <div className="grid w-full min-w-0 max-w-full gap-4 lg:grid-cols-[1.5fr_1fr_1fr] [&>*]:min-w-0">
+    <div className="grid w-full min-w-0 max-w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr] [&>*]:min-w-0">
       <section
         aria-labelledby="hero-cash"
-        className="animate-fade-up relative w-full min-w-0 max-w-full overflow-hidden rounded-3xl border p-4 sm:p-6 md:p-8"
+        className="animate-fade-up relative w-full min-w-0 max-w-full overflow-hidden rounded-3xl border p-4 sm:p-6 md:col-span-2 md:p-8 xl:col-span-1"
         style={{
           background:
             'radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--coral) 16%, var(--surface)) 0%, var(--surface) 45%, color-mix(in oklab, var(--inflow) 8%, var(--surface)) 100%)',
@@ -34,8 +34,8 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
 
         <div className="mt-4 flex min-w-0 flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <div className="min-w-0">
-            <p className="break-words text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl md:text-5xl">
-              {cash.length === 1 ? <CountUp value={cash[0].amount} currency={cash[0].currency} /> : cash.length ? <span className="space-y-1">{cash.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
+            <p className="whitespace-nowrap text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl xl:text-4xl 2xl:text-5xl">
+              {cash.length === 1 ? <CountUp value={cash[0].amount} currency={cash[0].currency} /> : cash.length ? <span className="space-y-1">{cash.map((item) => <span key={item.currency ?? 'unknown'} className="block whitespace-nowrap text-xl sm:text-2xl">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
             </p>
 
             {change != null && (
@@ -81,8 +81,8 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <h2 id="hero-debt">Dívidas</h2>
         </div>
 
-        <p className="mt-4 break-words text-2xl font-bold tracking-tight text-coral tabular-nums sm:text-3xl md:text-4xl">
-          {debt.length === 1 ? <CountUp value={debt[0].amount} currency={debt[0].currency} /> : debt.length ? <span className="space-y-1">{debt.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
+        <p className="mt-4 whitespace-nowrap text-2xl font-bold tracking-tight text-coral tabular-nums sm:text-3xl xl:text-3xl 2xl:text-4xl">
+          {debt.length === 1 ? <CountUp value={debt[0].amount} currency={debt[0].currency} /> : debt.length ? <span className="space-y-1">{debt.map((item) => <span key={item.currency ?? 'unknown'} className="block whitespace-nowrap text-xl sm:text-2xl">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
         </p>
 
         <p className="mt-1 text-xs font-medium text-text-muted">
@@ -121,8 +121,8 @@ export function HeroCard({ data }: { data: SandboxSnapshot }) {
           <h2 id="hero-investments">Investimentos</h2>
         </div>
 
-        <p className="mt-4 break-words text-2xl font-bold tracking-tight tabular-nums sm:text-3xl md:text-4xl">
-          {investments.length === 1 ? <CountUp value={investments[0].amount} currency={investments[0].currency} /> : investments.length ? <span className="space-y-1">{investments.map((item) => <span key={item.currency ?? 'unknown'} className="block">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
+        <p className="mt-4 whitespace-nowrap text-2xl font-bold tracking-tight tabular-nums sm:text-3xl xl:text-3xl 2xl:text-4xl">
+          {investments.length === 1 ? <CountUp value={investments[0].amount} currency={investments[0].currency} /> : investments.length ? <span className="space-y-1">{investments.map((item) => <span key={item.currency ?? 'unknown'} className="block whitespace-nowrap text-xl sm:text-2xl">{formatCurrency(item.amount, item.currency)}</span>)}</span> : '—'}
         </p>
 
         <p className="mt-1 text-xs font-medium text-text-muted">
