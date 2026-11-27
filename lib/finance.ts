@@ -10,7 +10,7 @@ export function monthKey(iso: string) {
 
 /** Usa o mês da movimentação mais recente, evitando painéis vazios quando a sandbox está defasada. */
 export function latestTransactionDate(txs: Transaction[], fallbackDate: string) {
-  const latest = txs.reduce(
+  const latest = txs.filter((transaction) => !transaction.pending).reduce(
     (date, transaction) =>
       !date || transaction.date > date ? transaction.date : date,
     '',
@@ -60,7 +60,7 @@ export function accountTotalsByCurrency(accounts: Account[]) {
 }
 
 export function periodFlowsByCurrency(txs: Transaction[], key: string) {
-  const list = inMonth(txs, key).filter((t) => !CATEGORIES[t.category].nonConsumption)
+  const list = inMonth(txs, key).filter((t) => !t.pending && !CATEGORIES[t.category].nonConsumption)
   const inflow = totalsByCurrency(list.filter(isInflow).map((t) => ({ currency: t.currency, amount: -t.amount })))
   const outflow = totalsByCurrency(list.filter(isOutflow).map((t) => ({ currency: t.currency, amount: t.amount })))
   return { inflow, outflow }
@@ -83,7 +83,7 @@ export function variation(current: number, previous: number) {
 export function cumulativeCashFlow(txs: Transaction[]) {
   const daily = new Map<string, number>()
   for (const transaction of txs) {
-    if (CATEGORIES[transaction.category].nonConsumption) continue
+    if (transaction.pending || CATEGORIES[transaction.category].nonConsumption) continue
     daily.set(
       transaction.date,
       (daily.get(transaction.date) ?? 0) - transaction.amount,
@@ -112,7 +112,7 @@ export interface CategorySlice {
 export function spendingByCategoryAndCurrency(txs: Transaction[], key: string): CategorySlice[] {
   const totals = new Map<string, { id: CategoryId; currency: string | null; value: number }>()
   for (const t of inMonth(txs, key)) {
-    if (!isOutflow(t) || CATEGORIES[t.category].nonConsumption) continue
+    if (t.pending || !isOutflow(t) || CATEGORIES[t.category].nonConsumption) continue
     const currency = t.currency ?? null
     const mapKey = `${currency ?? ''}:${t.category}`
     const current = totals.get(mapKey)
@@ -128,13 +128,13 @@ export function spendingByCategoryAndCurrency(txs: Transaction[], key: string): 
 }
 
 export function consumptionByCurrency(txs: Transaction[], key: string) {
-  return totalsByCurrency(inMonth(txs, key).filter((t) => isOutflow(t) && !CATEGORIES[t.category].nonConsumption).map((t) => ({ currency: t.currency, amount: t.amount })))
+  return totalsByCurrency(inMonth(txs, key).filter((t) => !t.pending && isOutflow(t) && !CATEGORIES[t.category].nonConsumption).map((t) => ({ currency: t.currency, amount: t.amount })))
 }
 
 export function spendingByCategory(txs: Transaction[], key: string): CategorySlice[] {
   const totals = new Map<CategoryId, number>()
   for (const t of inMonth(txs, key)) {
-    if (!isOutflow(t)) continue
+    if (t.pending || !isOutflow(t)) continue
     totals.set(t.category, (totals.get(t.category) ?? 0) + t.amount)
   }
   const sum = [...totals.values()].reduce((s, v) => s + v, 0)
