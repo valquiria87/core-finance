@@ -465,11 +465,13 @@ export function answer(
   data: SandboxSnapshot,
 ): ChatBlock[] {
   const q = normalize(question)
-  const latestTransactionDate = data.transactions.reduce(
-    (latest, transaction) =>
-      transaction.date > latest ? transaction.date : latest,
-    '',
-  )
+  const latestTransactionDate = data.transactions
+    .filter((transaction) => !transaction.pending)
+    .reduce(
+      (latest, transaction) =>
+        transaction.date > latest ? transaction.date : latest,
+      '',
+    )
   const fallbackMonth = latestTransactionDate
     ? monthKey(latestTransactionDate)
     : monthKey(data.asOf)
