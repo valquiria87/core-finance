@@ -163,7 +163,7 @@ export function spendingByWeek(txs: Transaction[], key: string) {
     { label: 'Semana 3 (15–21)', from: 15, to: 21 },
     { label: 'Semana 4 (22–31)', from: 22, to: 31 },
   ]
-  const list = inMonth(txs, key).filter((t) => isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
+  const list = inMonth(txs, key).filter((t) => !t.pending && isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
   return weeks
     .map((w) => {
       const items = list.filter((t) => {
@@ -176,7 +176,7 @@ export function spendingByWeek(txs: Transaction[], key: string) {
 }
 
 export function spendingByAccount(txs: Transaction[], accounts: Account[], key: string) {
-  const list = inMonth(txs, key).filter((t) => isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
+  const list = inMonth(txs, key).filter((t) => !t.pending && isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
   return accounts
     .map((a) => {
       const items = list.filter((t) => t.accountId === a.id)
