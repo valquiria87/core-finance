@@ -54,6 +54,10 @@ O Core Finance reúne um dashboard financeiro e uma interface conversacional em 
 **Limite importante:** o chat continua determinístico e não usa LLM. Em tempo de execução, o backend cria um servidor MCP e um cliente MCP no mesmo processo; o cliente chama a ferramenta somente leitura `get_finance_snapshot`, que consulta a Plaid Sandbox no servidor. O transporte é em memória, portanto não há endpoint MCP remoto/publicamente acessível. As atividades MCP no cliente de desenvolvimento e o MCP interno do runtime são fluxos distintos.
 
 ### Brief reconstruído do v0
+### Por que a implementação final usa Next.js em vez de Lovable
+
+O Lovable fez parte da etapa inicial de construção/prototipação. A aplicação final foi implementada em Next.js para permitir controle direto da integração server-side com o SDK Plaid, do tratamento de credenciais, das rotas de API, do runtime MCP interno, dos fluxos Pluggy/Supabase e dos testes automatizados. Foi uma decisão de implementação para tornar esses fluxos de backend e suas limitações explícitos e testáveis; isso não significa que o brief original exigisse Next.js nem que o Lovable seja incapaz de oferecer suporte a integrações. A especificação reconstruída registra a direção inicial, enquanto o repositório documenta a arquitetura final.
+
 
 **Brief reconstruído do v0 (resumo, não transcrição):** criar um dashboard responsivo de Open Finance com saldos de contas, informações de cartão, transações categorizadas, indicadores de gastos e um chat em português; utilizar uma interface moderna de produto financeiro e dados fictícios para demonstração.
 
