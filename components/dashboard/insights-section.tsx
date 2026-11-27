@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { Surface } from '@/components/finance/surface'
 import { useInsights } from '@/hooks/use-insights'
-import { formatBRL } from '@/lib/format'
+import { formatCurrency } from '@/lib/format'
 
 export function InsightsSection() {
   const { data, error, isLoading } = useInsights()
@@ -37,9 +37,7 @@ export function InsightsSection() {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
-  }).format(
-    new Date(`${data.monthEnd.currentMonth}-01T00:00:00Z`),
-  )
+  }).format(new Date(`${data.monthEnd[0]?.currentMonth ?? data.dataThrough.slice(0, 7)}-01T00:00:00Z`))
   const dataThroughLabel = new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: 'long',
@@ -54,7 +52,7 @@ export function InsightsSection() {
           Inteligência financeira
         </h2>
         <p className="text-sm text-text-muted">
-          Período analisado: {monthLabel} · movimentações até {dataThroughLabel}
+          Período analisado: {monthLabel} · movimentações confirmadas até {dataThroughLabel}
         </p>
       </div>
 
@@ -64,13 +62,19 @@ export function InsightsSection() {
             <TrendingUp className="size-4" aria-hidden="true" />
             <span className="text-sm font-medium">Previsão mensal</span>
           </div>
-
-          <p className="mt-3 text-xl font-bold tabular-nums">
-            {formatBRL(data.monthEnd.predictedMonthEnd)}
-          </p>
-
+          {data.monthEnd.length > 0 ? (
+            <ul className="mt-3 space-y-1 text-xl font-bold tabular-nums">
+              {data.monthEnd.map((item) => (
+                <li key={item.currency ?? 'unknown'}>
+                  {formatCurrency(item.predictedMonthEnd, item.currency)}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-text-muted">Sem despesas confirmadas neste mês.</p>
+          )}
           <p className="mt-1 text-xs text-text-muted">
-            Estimativa para {monthLabel}
+            Estimativa para {monthLabel}, separada por moeda
           </p>
         </Surface>
 
@@ -79,13 +83,22 @@ export function InsightsSection() {
             <CalendarDays className="size-4" aria-hidden="true" />
             <span className="text-sm font-medium">Média diária</span>
           </div>
-
-          <p className="mt-3 text-xl font-bold tabular-nums">
-            {formatBRL(data.monthEnd.avgDailySpend)}
-          </p>
-
+          {data.monthEnd.length > 0 ? (
+            <ul className="mt-3 space-y-2 text-sm tabular-nums">
+              {data.monthEnd.map((item) => (
+                <li key={item.currency ?? 'unknown'}>
+                  <span className="font-semibold">{formatCurrency(item.avgDailySpend, item.currency)}/dia</span>
+                  <span className="block text-xs text-text-muted">
+                    Confirmado: {formatCurrency(item.spentSoFar, item.currency)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-text-muted">Sem despesas confirmadas neste mês.</p>
+          )}
           <p className="mt-1 text-xs text-text-muted">
-            Consumo registrado até {dataThroughLabel}: {formatBRL(data.monthEnd.spentSoFar)}
+            Até {dataThroughLabel}
           </p>
         </Surface>
 
@@ -94,23 +107,17 @@ export function InsightsSection() {
             <Repeat className="size-4" aria-hidden="true" />
             <span className="text-sm font-medium">Assinaturas</span>
           </div>
-
-          <p className="mt-3 text-xl font-bold tabular-nums">
-            {data.subscriptions.length}
-          </p>
-
+          <p className="mt-3 text-xl font-bold">{data.subscriptions.length}</p>
           {data.subscriptions.length > 0 ? (
             <ul className="mt-2 space-y-1 text-xs text-text-muted">
-              {data.subscriptions.slice(0, 3).map((item) => (
-                <li key={item.merchant}>
-                  {item.merchant} · {formatBRL(item.averageAmount)}
+              {data.subscriptions.slice(0, 5).map((item) => (
+                <li key={`${item.currency ?? 'unknown'}-${item.merchant}`}>
+                  {item.merchant} · {formatCurrency(item.averageAmount, item.currency)}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1 text-xs text-text-muted">
-              Nenhuma recorrência identificada
-            </p>
+            <p className="mt-1 text-xs text-text-muted">Nenhuma recorrência identificada</p>
           )}
         </Surface>
 
@@ -119,29 +126,23 @@ export function InsightsSection() {
             <AlertTriangle className="size-4" aria-hidden="true" />
             <span className="text-sm font-medium">Gastos atípicos</span>
           </div>
-
-          <p className="mt-3 text-xl font-bold tabular-nums">
-            {data.anomalies.length}
-          </p>
-
+          <p className="mt-3 text-xl font-bold">{data.anomalies.length}</p>
           {data.anomalies.length > 0 ? (
             <ul className="mt-2 space-y-1 text-xs text-text-muted">
-              {data.anomalies.slice(0, 3).map((item) => (
+              {data.anomalies.slice(0, 5).map((item) => (
                 <li key={item.id}>
-                  {item.merchant} · {formatBRL(item.amount)}
+                  {item.merchant} · {formatCurrency(item.amount, item.currency)}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1 text-xs text-text-muted">
-              Nenhum gasto atípico identificado
-            </p>
+            <p className="mt-1 text-xs text-text-muted">Nenhum gasto atípico identificado</p>
           )}
         </Surface>
       </div>
 
       <p className="text-xs text-text-muted">
-        Previsão baseada na média diária até {dataThroughLabel}, projetada para o fim de {monthLabel}. Os resultados são estimativas e não garantem despesas futuras.
+        Previsões, recorrências e anomalias são estimativas heurísticas calculadas somente com movimentações confirmadas e agrupadas por moeda; não representam garantias nem despesas futuras observadas.
       </p>
     </section>
   )
