@@ -38,23 +38,24 @@ O guia pede que as observações sejam fundamentadas em quantidade de registros,
 
 ## O que a aplicação publicada realmente executa
 
-A aplicação publicada tem uma integração de dados própria com a **Pluggy Sandbox API**:
+A aplicação publicada utiliza **Plaid Sandbox** como fonte de dados do dashboard e do chat:
 
-1. `POST /api/webhooks/pluggy` valida a notificação.
-2. O servidor consulta contas e transações pela API Pluggy.
-3. `lib/pluggy-adapter.ts` normaliza os registros.
-4. O snapshot é salvo em `finance_snapshots` no Supabase.
-5. `GET /api/sandbox`, `GET /api/insights` e `POST /api/core` leem esse snapshot.
+1. `lib/plaid.ts` cria o cliente oficial Plaid com credenciais exclusivamente server-side e valida o ambiente Sandbox.
+2. O backend consulta contas e transações no Sandbox e normaliza os registros por `lib/plaid-adapter.ts`.
+3. `GET /api/sandbox`, `GET /api/insights` e `POST /api/core` utilizam o snapshot Plaid.
+4. O chat em `lib/core-engine.ts` responde por regras determinísticas. Não chama LLM nem executa ferramentas MCP em tempo de execução.
 
-O chat atual usa regras determinísticas em `lib/core-engine.ts`. Ele não chama LLM nem executa ferramentas MCP em tempo de execução. Os MCPs são práticas do ambiente de desenvolvimento; a integração Pluggy do app publicado é uma camada separada.
+A implementação Pluggy permanece independente: há adaptador e cliente da API, rota de webhook e persistência Supabase para o fluxo Pluggy. Isso não significa que o dashboard publicado esteja usando automaticamente os mesmos dados Plaid e Pluggy.
 
-O projeto não contém, nesta branch, um servidor MCP Plaid configurado/versionado nem chamadas de runtime para `/accounts/get` ou `/transactions/get`. As credenciais do MCP devem permanecer na configuração local do cliente MCP; não devem ser adicionadas ao `.env.example` do app Pluggy nem ao Git.
+O MCP interno do chat utiliza transporte em memória no backend. Não é um servidor MCP remoto publicado. Os MCPs Pluggy Docs e Plaid STDIO foram utilizados como práticas didáticas no ambiente de desenvolvimento, separados da integração de dados do app.
+
+A Edge Function `supabase/functions/dio-bank-mcp` existe no código, mas não há comprovação de implantação remota. Não deve ser descrita como serviço ativo em produção.
 
 ### Mudança em relação ao escopo inicial
 
-O brief salvo em `docs/prompt-v0.md` e `docs/prompt-lovable.md` descreve Pluggy Docs MCP e Plaid Sandbox MCP como fontes de aprendizado/dados da experiência inicial. O guia do instrutor prevê uma etapa de backend com a API Plaid Sandbox. A implementação atual escolheu Pluggy Sandbox API para a integração efetiva do dashboard e do chat.
+O brief salvo em `docs/prompt-v0.md` e `docs/prompt-lovable.md` descreve Pluggy Docs MCP e Plaid Sandbox MCP como fontes de aprendizado/dados da experiência inicial. O guia do instrutor também registra a etapa de backend com a API Plaid Sandbox. A versão publicada usa Plaid Sandbox para o dashboard e o chat, enquanto o caminho Pluggy permanece implementado separadamente.
 
-Essa escolha é uma evolução arquitetural do projeto, mas **não comprova a implementação Plaid da etapa P07 dentro do app**. Não é necessário migrar o app para Plaid apenas para demonstrar a prática MCP, desde que a separação esteja clara na entrega.
+A consulta ao Pluggy Docs MCP comprova consulta à documentação, não uma leitura de dados bancários Pluggy. Da mesma forma, o laboratório Plaid MCP comprova a prática STDIO, mas não substitui as chamadas feitas pelo backend do aplicativo.
 
 ## Evidências novas e próximo fechamento
 
