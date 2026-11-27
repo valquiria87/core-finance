@@ -34,7 +34,7 @@ O guia pede que as observações sejam fundamentadas em quantidade de registros,
 
 - A captura Plaid atual mostra agrupamentos por categoria e quantidades, mas não comprova, sozinha, as três observações completas com respectivos totais e explicações.
 - `docs/tabela-padroes-gasto.md` é uma tabela **ilustrativa** de oito transações fictícias; não é o resultado da consulta de 48 transações.
-- O Core atual calcula três visões — por categoria, por semana e por conta — usando o snapshot Pluggy persistido. Essas visões pertencem à aplicação Pluggy e não devem ser apresentadas como análise calculada sobre as 48 transações da captura Plaid.
+- O Core publicado calcula três visões — por categoria, por semana e por conta — usando o snapshot obtido pelo backend Plaid Sandbox. Essas visões não devem ser apresentadas como análise calculada sobre as 48 transações da captura histórica Plaid MCP.
 
 ## O que a aplicação publicada realmente executa
 
