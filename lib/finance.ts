@@ -68,7 +68,7 @@ export function periodFlowsByCurrency(txs: Transaction[], key: string) {
 
 /** Entradas e saídas externas do mês; transferências e pagamentos de dívida são excluídos para evitar dupla contagem. */
 export function periodFlows(txs: Transaction[], key: string) {
-  const list = inMonth(txs, key).filter((t) => !CATEGORIES[t.category].nonConsumption)
+  const list = inMonth(txs, key).filter((t) => !t.pending && !CATEGORIES[t.category].nonConsumption)
   const inflow = list.filter(isInflow).reduce((s, t) => s - t.amount, 0)
   const outflow = list.filter(isOutflow).reduce((s, t) => s + t.amount, 0)
   return { inflow, outflow }
@@ -152,7 +152,7 @@ export function spendingByCategory(txs: Transaction[], key: string): CategorySli
 
 export function consumptionTotal(txs: Transaction[], key: string) {
   return inMonth(txs, key)
-    .filter((t) => isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
+    .filter((t) => !t.pending && isOutflow(t) && !CATEGORIES[t.category].nonConsumption)
     .reduce((s, t) => s + t.amount, 0)
 }
 
