@@ -23,7 +23,7 @@ function FlowTrendForCurrency({ data, currency }: { data: SandboxSnapshot; curre
     { label: '22–31', from: 22, to: 31 },
   ].map((week) => {
       const weeklyTransactions = transactions.filter((transaction) => {
-      if (!transaction.date.startsWith(key)) return false
+      if (transaction.pending || !transaction.date.startsWith(key)) return false
       const day = Number(transaction.date.slice(8, 10))
       return day >= week.from && day <= week.to
     })
