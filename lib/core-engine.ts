@@ -311,7 +311,13 @@ function categoryTable(
   const counts = new Map<string, number>()
 
   for (const transaction of data.transactions) {
-    if (!transaction.date.startsWith(key) || transaction.amount <= 0) continue
+    if (
+      transaction.pending ||
+      !transaction.date.startsWith(key) ||
+      transaction.amount <= 0 ||
+      transaction.category === 'transfer' ||
+      transaction.category === 'debt'
+    ) continue
     const countKey = `${transaction.currency ?? ''}:${transaction.category}`
     counts.set(countKey, (counts.get(countKey) ?? 0) + 1)
   }
