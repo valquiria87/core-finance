@@ -46,7 +46,8 @@ test('/api/insights builds indicators from Plaid snapshot without Pluggy or Supa
     assert.equal(body.dataThrough, body.asOf)
     assert.deepEqual(body.subscriptions, [])
     assert.deepEqual(body.anomalies, [])
-    assert.equal(typeof body.monthEnd.predictedMonthEnd, 'number')
+    assert.ok(Array.isArray(body.monthEnd))
+    assert.deepEqual(body.monthEnd, [])
   } finally {
     global.fetch = previousFetch
     for (const name of envNames) {
