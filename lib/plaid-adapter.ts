@@ -74,14 +74,16 @@ export function createPlaidSnapshot(
 
   const accounts: Account[] = accountResults.data.map((account) => {
     const providerType = account.type.toLowerCase()
-    const isSavings = account.subtype?.toLowerCase().includes('savings') ?? false
-    const isDeposit = providerType === 'depository'
+    const subtype = account.subtype?.toLowerCase().trim() ?? ''
+    // Only checking and savings are treated as immediately available deposits.
+    // CDs, money-market, HSA, cash-management and unknown depository subtypes
+    // remain visible as "other" and are excluded from available-cash totals.
     const type: Account['type'] =
       providerType === 'credit' ? 'credit'
         : providerType === 'loan' ? 'loan'
           : providerType === 'investment' ? 'investment'
-            : providerType === 'other' ? 'other'
-              : isDeposit ? (isSavings ? 'savings' : 'checking')
+            : providerType === 'depository' && subtype === 'checking' ? 'checking'
+              : providerType === 'depository' && subtype === 'savings' ? 'savings'
                 : 'other'
     const current = account.balances.current ?? null
     const isDebt = type === 'credit' || type === 'loan'
