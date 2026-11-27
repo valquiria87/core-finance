@@ -98,3 +98,23 @@ test('dashboard totals and categories stay separated by currency', () => {
     { currency: 'EUR', value: 20 }, { currency: 'USD', value: 10 },
   ])
 })
+
+
+test('all financial aggregates exclude pending transactions from confirmed totals', () => {
+  const { cumulativeCashFlow, spendingByAccount, latestTransactionDate } = require('../lib/finance.ts')
+  const withPending = [
+    ...transactions,
+    { id: 'pending-expense', date: '2026-10-29', amount: 900, category: 'food', merchant: 'Pendente', accountId: 'checking', pending: true, currency: 'USD' },
+    { id: 'pending-income', date: '2026-10-30', amount: -500, category: 'income', merchant: 'Entrada pendente', accountId: 'checking', pending: true, currency: 'USD' },
+  ]
+
+  assert.deepEqual(periodFlows(withPending, '2026-10'), { inflow: 8500, outflow: 1272.7 })
+  assert.equal(consumptionTotal(withPending, '2026-10'), 1272.7)
+  assert.equal(spendingByCategory(withPending, '2026-10').some((item) => item.value === 900), false)
+  assert.equal(spendingByCategoryAndCurrency(withPending, '2026-10').some((item) => item.value === 900), false)
+  assert.equal(periodFlowsByCurrency(withPending, '2026-10').outflow.some((item) => item.amount === 900), false)
+  assert.equal(spendingByWeek(withPending, '2026-10').reduce((sum, item) => sum + item.value, 0), 1272.7)
+  assert.equal(spendingByAccount(withPending, [{ id: 'checking' }, { id: 'credit' }], '2026-10').reduce((sum, item) => sum + item.value, 0), 1272.7)
+  assert.equal(cumulativeCashFlow(withPending).some((item) => item.date === '2026-10-29' || item.date === '2026-10-30'), false)
+  assert.equal(latestTransactionDate(withPending, '2026-10-01'), '2026-10-28')
+})

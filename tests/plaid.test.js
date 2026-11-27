@@ -127,10 +127,14 @@ test('Plaid adapter classifies deposit, credit, loan, investment, and other acco
   const totals = accountTotalsByCurrency(snapshot.accounts)
 
   assert.deepEqual(snapshot.accounts.map((item) => item.type), [
-    'checking', 'savings', 'checking', 'checking', 'checking', 'checking',
+    'checking', 'savings', 'other', 'other', 'other', 'other',
     'credit', 'investment', 'investment', 'loan', 'loan', 'loan',
   ])
-  assert.deepEqual(totals.cash, [{ currency: 'USD', amount: 62589 }])
+  assert.deepEqual(totals.cash, [{ currency: 'USD', amount: 320 }])
+  assert.equal(snapshot.accounts.find((item) => item.id === 'cd').available, null)
+  assert.equal(snapshot.accounts.find((item) => item.id === 'money-market').available, null)
+  assert.equal(snapshot.accounts.find((item) => item.id === 'hsa').available, null)
+  assert.equal(snapshot.accounts.find((item) => item.id === 'cash-management').available, null)
   assert.deepEqual(totals.debt, [{ currency: 'USD', amount: 145185.39 }])
   assert.deepEqual(totals.investments, [{ currency: 'USD', amount: 23952.74 }])
   assert.equal(snapshot.accounts.find((item) => item.id === 'student-loan').current, 65262)

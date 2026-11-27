@@ -8,12 +8,14 @@ export interface InsightsData {
   asOf: string
   dataThrough: string
   subscriptions: {
+    currency: string | null
     merchant: string
     occurrences: number
     averageAmount: number
     std: number
   }[]
   anomalies: {
+    currency: string | null
     id: string
     merchant: string
     category: CategoryId
@@ -21,12 +23,13 @@ export interface InsightsData {
     zscore: number
   }[]
   monthEnd: {
+    currency: string | null
     currentMonth: string
     spentSoFar: number
     avgDailySpend: number
     remainingDays: number
     predictedMonthEnd: number
-  }
+  }[]
 }
 
 const fetcher = async (url: string): Promise<InsightsData> => {

@@ -311,7 +311,13 @@ function categoryTable(
   const counts = new Map<string, number>()
 
   for (const transaction of data.transactions) {
-    if (!transaction.date.startsWith(key) || transaction.amount <= 0) continue
+    if (
+      transaction.pending ||
+      !transaction.date.startsWith(key) ||
+      transaction.amount <= 0 ||
+      transaction.category === 'transfer' ||
+      transaction.category === 'debt'
+    ) continue
     const countKey = `${transaction.currency ?? ''}:${transaction.category}`
     counts.set(countKey, (counts.get(countKey) ?? 0) + 1)
   }
@@ -459,11 +465,13 @@ export function answer(
   data: SandboxSnapshot,
 ): ChatBlock[] {
   const q = normalize(question)
-  const latestTransactionDate = data.transactions.reduce(
-    (latest, transaction) =>
-      transaction.date > latest ? transaction.date : latest,
-    '',
-  )
+  const latestTransactionDate = data.transactions
+    .filter((transaction) => !transaction.pending)
+    .reduce(
+      (latest, transaction) =>
+        transaction.date > latest ? transaction.date : latest,
+      '',
+    )
   const fallbackMonth = latestTransactionDate
     ? monthKey(latestTransactionDate)
     : monthKey(data.asOf)
